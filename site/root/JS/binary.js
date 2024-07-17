@@ -3,7 +3,7 @@ function sqrt() {
     b = document.getElementById('b').value;
     c = document.getElementById('c').value;
 
-    if (a == '' || a == 0) {
+    if (a == 0) {
         document.getElementById('log1').innerHTML = '이차방정식이 아닙니다.';
         document.getElementById('log2').innerHTML = '';
         document.getElementById('log3').innerHTML = '';
@@ -11,7 +11,8 @@ function sqrt() {
 
         return;
     }
-    if (b == '') b = 0;
+    if (a == '') a = 1;
+    if (b == '') b = 1;
     if (c == '') c = 0;
 
     d = (b ** 2 - 4 * a * c) / (4 * a);
@@ -73,8 +74,30 @@ function sqrt() {
 }
 
 function solution(n) {
-    var answer = Math.sqrt(n);
-    return Number.isInteger(answer) ? 1 : 2;
+    let result = [];
+    let out = 0;
+    let divisor = 2;
+    var res = 1;
+
+    while (n >= 2) {
+        if (n % divisor === 0) {
+            console.log(divisor)
+            if (result.includes(divisor) === true) {
+                result.splice(result.indexOf(divisor), 1)
+                out = out + divisor;
+            } else {
+                result.push(divisor);
+            }
+            console.log(out)
+            n = n / divisor;
+            divisor = 2;
+        } else divisor++;
+    }
+    result.forEach(e => {
+        var res = res * e;
+    })
+
+    return [out, res];
 }
 
 function Discrimination() {
