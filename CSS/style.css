@@ -1,8 +1,171 @@
-/* 배경 꽉 채우기 */
-
-body {
-    background: #ddd;
+@font-face {
+    font-family: 'SUIT-Regular';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_suit@1.0/SUIT-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
 }
+
+@media (width > 600px) {
+
+    .menu {
+        height: calc(100vh - 17vw);
+        width: 100vw;
+        background: #f6f6f6;
+    }
+
+    .menu-btn {
+        width: 30vw;
+        height: calc(100vh - 17vw - 30px);
+        /* padding-top: 15px; */
+        /* background: #ff0000; */
+        float: left;
+        margin-left: 2.5vw;
+    }
+
+}
+
+@media (width < 600px) and (orientation: portrait) {
+
+    .menu-btn {
+        width: 90vw;
+        margin-left: 5vw;
+        float: left;
+        /* height: calc(200vh - 17vw - 30px); */
+    }
+
+    .menu {
+        display: inline-block;
+        padding-bottom: 10vh;
+        width: 100vw;
+        background: #f6f6f6;
+    }
+
+}
+
+/* 버튼 디자인 (codepen) - 메인 */
+
+.btn-area {
+    margin-top: 10vh;
+}
+
+.custom-btn {
+    width: 130px;
+    height: 40px;
+    color: #fff;
+    border-radius: 5px;
+    padding: 10px 25px;
+    font-family: 'Lato', sans-serif;
+    font-weight: 500;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    display: inline-block;
+    box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, .5),
+        7px 7px 20px 0px rgba(0, 0, 0, .1),
+        4px 4px 5px 0px rgba(0, 0, 0, .1);
+    outline: none;
+}
+
+/* 8 */
+.btn-8 {
+    background-color: #000;
+    background-image: linear-gradient(315deg, #000 0%, #0c0c0c 74%);
+    line-height: 42px;
+    padding: 0;
+    border: none;
+}
+
+.btn-8 span {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.btn-8:before,
+.btn-8:after {
+    position: absolute;
+    content: "";
+    right: 0;
+    bottom: 0;
+    background: #0c0c0c;
+    /*box-shadow:  4px 4px 6px 0 rgba(255,255,255,.5),
+                -4px -4px 6px 0 rgba(116, 125, 136, .2), 
+      inset -4px -4px 6px 0 rgba(255,255,255,.5),
+      inset 4px 4px 6px 0 rgba(116, 125, 136, .3);*/
+    transition: all 0.3s ease;
+}
+
+.btn-8:before {
+    height: 0%;
+    width: 2px;
+}
+
+.btn-8:after {
+    width: 0%;
+    height: 2px;
+}
+
+.btn-8:hover:before {
+    height: 100%;
+}
+
+.btn-8:hover:after {
+    width: 100%;
+}
+
+.btn-8:hover {
+    background: transparent;
+    /* background: #fff; */
+}
+
+.btn-8 .btn-span:hover {
+    color: #0c0c0c;
+    /* color: #fff; */
+}
+
+.bspan:hover {
+    color: #fff;
+}
+
+.btn-8 span:before,
+.btn-8 span:after {
+    position: absolute;
+    content: "";
+    left: 0;
+    top: 0;
+    background: #0c0c0c;
+    /*box-shadow:  4px 4px 6px 0 rgba(255,255,255,.5),
+                -4px -4px 6px 0 rgba(116, 125, 136, .2), 
+      inset -4px -4px 6px 0 rgba(255,255,255,.5),
+      inset 4px 4px 6px 0 rgba(116, 125, 136, .3);*/
+    transition: all 0.3s ease;
+}
+
+.btn-8 span:before {
+    width: 2px;
+    height: 0%;
+}
+
+.btn-8 span:after {
+    height: 2px;
+    width: 0%;
+}
+
+.btn-8 span:hover:before {
+    height: 100%;
+}
+
+.btn-8 span:hover:after {
+    width: 100%;
+}
+
+  
+
+/* body {
+    background: #ddd;
+} */
 
 .full {
     width: 100%;
@@ -16,19 +179,40 @@ body {
     scroll-snap-align: start;
 }
 
+#subtitle {
+    font-family: 'SUIT-Regular';
+    font-weight: 900;
+}
 
 /* 글씨체 적용 */
 
-h1,
+h1 {
+    font-family: 'Jua', sans-serif;
+}
+
 h2,
 h3,
 h4,
 h5,
 h6,
 p {
-    font-family: 'Jua', sans-serif;
+    font-family: 'SUIT-Regular';
+    font-weight: 500;
 }
 
+#m-hr {
+    width: 70vw;
+    /* display: inline-block; */
+    background: #fff;
+    border: 0;
+    height: 2px;
+}
+
+.ico-btn {
+    margin-top: 30px;
+    font-size: 50px;
+
+}
 
 /* 스크롤바 제거 */
 

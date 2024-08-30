@@ -49,7 +49,7 @@
     display: inline-block;
     margin: 2rem;
     text-align: center;
-    float: left;
+    /* float: left; */
     position: relative;
     transform-origin: center center;
     /* translate: ; */
