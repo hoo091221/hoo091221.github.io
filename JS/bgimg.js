@@ -20,7 +20,7 @@ function bg() {
 
 function dobg() {
 	var num = 1;
-	while (doesFileExist('./img/bgimg/doing/bgimg_' + num + '.png') == true) {
+	while (doesFileExist('./img/bgimg/progress/bgimg_' + num + '.png') == true) {
 		num = ++num;
 	}
 	return num;
@@ -38,7 +38,7 @@ var num = bg() - 3;
 document.getElementById('bgdiv-2').style.backgroundImage = "url('./img/bgimg/bgimg_" + num + ".png')";
 
 var num = dobg();
-document.getElementById('bgdiv-do').style.backgroundImage = "url('./../img/bgimg/doing/bgimg_" + num + ".png')";
+document.getElementById('bgdiv-do').style.backgroundImage = "url('./../img/bgimg/progress/bgimg_" + num + ".png')";
 
 var num = bg() - 1;
 document.getElementById('bgdiv-end').style.backgroundImage = "url('./../img/bgimg/bgimg_" + num + ".png')";

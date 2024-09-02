@@ -18,7 +18,9 @@
         height: calc(100vh - 17vw - 30px);
         /* padding-top: 15px; */
         /* background: #ff0000; */
-        float: left;
+        /* float: left; */
+        display: inline-block;
+        margin-left: 2.5vw;
     }
 
 }
@@ -28,14 +30,17 @@
     .menu-btn {
         width: 90vw;
         margin-left: 5vw;
-        float: left;
+        /* float: left; */
+        display: inline-block;
+        zoom: 1;
         /* height: calc(200vh - 17vw - 30px); */
+        margin-left: 5vw;
     }
 
     .menu {
-        display: inline-block;
+        /* display: inline-block; */
         padding-bottom: 10vh;
-        width: 100vw;
+        /*.display: inline;*/
         background: #f6f6f6;
     }
 
@@ -167,7 +172,7 @@
     background: #fff;
     border-radius: 20px;
     padding: 10px 20px 10px 20px;
-}  
+}
 
 .donate-img {
     /* display: inline-block; */
