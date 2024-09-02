@@ -218,8 +218,10 @@
     <script>
         // include.js
         var allElements = document.getElementsByTagName('*');
-        Array.prototype.forEach.call(allElements, function(el) {
-            var includePath = `https://${window.location.host}/${el.dataset.tagHref}`;
+        Array.prototype.forEach.call(allElements, function (el) {
+            if (typeof el.dataset.tagHref != "undefined") {
+                var includePath = `https://${window.location.host}/${el.dataset.tagHref}`;
+            }
             if (includePath) {
                 el.href = includePath;
             }
