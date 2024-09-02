@@ -192,6 +192,16 @@
     <script>
         document.querySelector('.carousel-control-prev-icon').click();
     </script>
+    <script>
+        // include.js
+        var allElements = document.getElementsByTagName('*');
+        Array.prototype.forEach.call(allElements, function(el) {
+            var includePath = `https://${window.location.host}/${el.dataset.tagHref}`;
+            if (includePath) {
+                el.href = includePath;
+            }
+        });
+    </script>
 </body>
 
 </html>

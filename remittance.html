@@ -93,14 +93,18 @@
             <!-- 제목 -->
 
             <center>
-                <h1 class="splash-text title">후</h1>
-                <h1 class="splash-p title">원</h1>
+                <h1 class="splash-text title">1908-</h1>
+            </center>
+            <center>
+                <h3 class="splash-p title">토스뱅크</h1>
             </center>
             <center>
                 <hr id="m-hr">
-                <button class="donate-btn" onclick="window.open('https://toss.me/chamsae000')"><img class="donate-img" src="./img/other/toss.jpg"></button>
-            
-                <button class="donate-btn" onclick="window.open('./remittance.html', '계좌이체로 후원하기', '_self')"><i class="fa-solid fa-money-bill"></i> 계좌이체</button>
+                <button class="donate-btn" onclick="window.open('https://toss.me/chamsae000')"><img class="donate-img"
+                        src="./img/other/toss.jpg"></button>
+
+                <button class="donate-btn" onclick="window.open('./remittance.html', '계좌이체로 후원하기', '_self')"><i
+                        class="fa-solid fa-money-bill"></i> 계좌이체</button>
             </center>
         </div>
 
@@ -194,7 +198,7 @@
     <script>
         // include.js
         var allElements = document.getElementsByTagName('*');
-        Array.prototype.forEach.call(allElements, function(el) {
+        Array.prototype.forEach.call(allElements, function (el) {
             var includePath = `https://${window.location.host}/${el.dataset.tagHref}`;
             if (includePath) {
                 el.href = includePath;

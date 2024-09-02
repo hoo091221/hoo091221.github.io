@@ -8,7 +8,7 @@ function sound() {
 	audioplayer.play();
 }
 
-sound();
+// sound();
 
 // 배경 변경
 

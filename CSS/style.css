@@ -19,7 +19,6 @@
         /* padding-top: 15px; */
         /* background: #ff0000; */
         float: left;
-        margin-left: 2.5vw;
     }
 
 }
@@ -161,7 +160,19 @@
     width: 100%;
 }
 
-  
+.donate-btn {
+    width: 200px;
+    height: 80px;
+    border: 0px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 10px 20px 10px 20px;
+}  
+
+.donate-img {
+    /* display: inline-block; */
+    width: 100%;
+}
 
 /* body {
     background: #ddd;
