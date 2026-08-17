@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 // 💡 useNavigate는 사용하지 않으므로 임포트하지 않아도 됩니다.
 
 const webCards = [
-  { title: "NOMO", desc: "중학교 1학년 전범위의 교육과정.", url: "https://hoo091221.github.io/nomo" },
+  // { title: "NOMO", desc: "중학교 1학년 전범위의 교육과정.", url: "https://hoo091221.github.io/nomo" },
   { title: "오늘의 급식", desc: "오직 거제중학교의 급식만.", url: "https://hoo091221.github.io/lunch" },
   { title: "AVOID!", desc: "수행평가용으로 만든 간단한 게임.", url: "https://hoo091221.github.io/avoid" },
   { title: "진법변환기", desc: "공식을 활용한 진법변환 도구.", url: "https://hoo091221.github.io/binary" },
