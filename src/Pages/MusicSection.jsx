@@ -3,7 +3,7 @@ import React, { useState, useRef, useEffect } from "react";
 import kawaiiBass1Src from "../sounds/Kawaii_Bass_1.mp3";
 import kawaiiBass2Src from "../sounds/Kawaii_Bass_2.mp3";
 import anime1Src from "../sounds/Anime_1.mp3";
-import project51Src from "../sounds/Project_5_1.mp3";
+// import project51Src from "../sounds/Project_5_1.mp3";
 
 const playlistTracks = [
   { id: "Kawaii_Bass_1", name: "🎹 Kawaii_Bass_1", file: kawaiiBass1Src, color: "#00ff66", defaultBpm: 190 },
