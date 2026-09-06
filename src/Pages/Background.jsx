@@ -4,6 +4,7 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import WebSection from './WebSection';
 import PowerPointSection from './PowerPointSection';
 import MusicSection from './MusicSection';
+import "https://kit.fontawesome.com/710646e3fd.js";
 
 const theme = {
   bgBase: '#f0f9ff',
@@ -134,9 +135,9 @@ export default function MainStudio() {
   };
 
   const socials = [
-    { name: 'X', url: 'https://x.com', color: '#0284c7' },
-    { name: 'INSTAGRAM', url: 'https://instagram.com', color: '#db2777' },
-    { name: 'DISCORD', url: 'https://discord.com', color: '#4f46e5' },
+    { name: <i class="fa-brands fa-x-twitter"></i>, url: 'https://x.com', color: '#0284c7' },
+    { name: <i class="fa-brands fa-instagram"></i>, url: 'https://instagram.com', color: '#db2777' },
+    { name: <i class="fa-brands fa-discord"></i>, url: 'https://discord.com', color: '#4f46e5' },
   ];
 
   return (
