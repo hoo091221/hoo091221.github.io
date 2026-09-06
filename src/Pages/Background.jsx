@@ -4,7 +4,7 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import WebSection from './WebSection';
 import PowerPointSection from './PowerPointSection';
 import MusicSection from './MusicSection';
-import "https://kit.fontawesome.com/710646e3fd.js";
+// import "https://kit.fontawesome.com/710646e3fd.js";
 
 const theme = {
   bgBase: '#f0f9ff',
