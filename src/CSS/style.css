@@ -1585,13 +1585,21 @@ body {
     box-sizing: border-box;
 }
 
+
+/* index.css 또는 전역 스타일 파일 */
+
+* {
+    box-sizing: border-box;
+}
+
 html,
 body,
 #root {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100vw;
-    height: 100vh;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
     background-color: #f0f9ff;
+    /* 배경색 깜빡임 방지 */
 }

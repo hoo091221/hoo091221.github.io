@@ -22,10 +22,14 @@ const styles = {
   global: {
     width: '100vw',
     height: '100vh',
+    margin: 0,
+    padding: 0,
+    top: 0,
+    left: 0,
     background: `linear-gradient(135deg, ${theme.bgGradStart} 0%, ${theme.bgBase} 50%, ${theme.bgGradEnd} 100%)`,
     overflow: 'hidden',
     fontFamily: theme.fontFamily,
-    position: 'relative',
+    position: 'fixed', // absolute 대신 fixed를 사용하여 뷰포트 기준 절대 고정
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -167,16 +171,16 @@ export default function MainStudio() {
       {/* 상단 타이틀 영역 (반응형 위치 조정) */}
       {!activeApp && (
         <motion.div
-          initial={{ opacity: 0, y: -20, filter: 'blur(8px)' }}
-          animate={isBooted ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          style={{
-            position: 'absolute',
-            top: isMobile ? '4vh' : '8vh',
-            left: isMobile ? '6vw' : '5vw',
-            zIndex: 10,
-            pointerEvents: 'none',
-          }}
+        initial={{ opacity: 0, y: -20, filter: 'blur(8px)' }}
+        animate={isBooted ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+        transition={{ duration: 0.8, delay: 0.4 }}
+        style={{
+          position: 'absolute',
+          top: '24px',
+          left: '28px',
+          zIndex: 10,
+          pointerEvents: 'none',
+        }}
         >
           <h1 style={{ color: theme.textPrimary, fontSize: isMobile ? '1.1rem' : '1.4rem', margin: 0, fontWeight: 700, letterSpacing: '4px' }}>ARCHIVE</h1>
           <p style={{ color: theme.textSecondary, marginTop: '4px', fontSize: isMobile ? '0.7rem' : '0.8rem', letterSpacing: '2px', fontWeight: 500 }}>PROJECT PORTFOLIO</p>
