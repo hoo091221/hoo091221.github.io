@@ -29,7 +29,7 @@ const styles = {
     position: 'relative',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'center',        // 🟢 다시 정중앙 정렬로 복구
     perspective: '2000px',
   },
   lightLeak: {
@@ -72,7 +72,7 @@ const styles = {
 export default function MainStudio() {
   const [activeApp, setActiveApp] = useState(null);
   const [isBooted, setIsBooted] = useState(false);
-  const [lockedNotice, setLockedNotice] = useState(null); // 🟢 잠김 안내 토스트 상태
+  const [lockedNotice, setLockedNotice] = useState(null);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -96,37 +96,36 @@ export default function MainStudio() {
   }, []);
 
   const apps = {
-    vsc: { 
+    vsc: {
       title: 'VSC // WEB DEVELOPMENT',
-      subtitle: '프론트엔드와 웹 유틸리티 아키텍처', 
+      subtitle: '프론트엔드와 웹 유틸리티 아키텍처',
       tag: '01. DEVELOPMENT',
       symbol: '</>',
       color: '#0284c7',
-      isLocked: false, // 🟢 열려있는 프로젝트
+      isLocked: false,
       component: <WebSection onBack={() => setActiveApp(null)} />
     },
-    ppt: { 
-      title: 'PPT // DESIGN', 
-      subtitle: 'VBA 및 학교 세특 발표 PPT', 
+    ppt: {
+      title: 'PPT // DESIGN',
+      subtitle: 'VBA 및 학교 세특 발표 PPT',
       tag: '02. CREATIVE CODING',
       symbol: '3D',
       color: '#0369a1',
-      isLocked: true, // 🟢 잠겨있는 프로젝트
+      isLocked: true,
       component: <PowerPointSection onBack={() => setActiveApp(null)} />
     },
-    fl: { 
-      title: 'FL // SOUND LAB', 
-      subtitle: '카와이 퓨처 베이스 신스 디자인', 
+    fl: {
+      title: 'FL // SOUND LAB',
+      subtitle: '카와이 퓨처 베이스 신스 디자인',
       tag: '03. AUDIO LAB',
       symbol: '♫',
       color: '#0ea5e9',
-      isLocked: true, // 🟢 잠겨있는 프로젝트
+      isLocked: true,
     }
   };
 
   const handleCardClick = (key, app) => {
     if (app.isLocked) {
-      // 잠긴 카드를 누르면 흔들림 효과와 함께 안내 문구 표시
       setLockedNotice(key);
       setTimeout(() => setLockedNotice(null), 1500);
       return;
@@ -135,9 +134,9 @@ export default function MainStudio() {
   };
 
   const socials = [
-    { name: <i class="fa-brands fa-x-twitter"></i>, url: 'https://x.com', color: '#0284c7' },
-    { name: <i class="fa-brands fa-instagram"></i>, url: 'https://instagram.com', color: '#db2777' },
-    { name: <i class="fa-brands fa-discord"></i>, url: 'https://discord.com', color: '#4f46e5' },
+    { name: <i className="fa-brands fa-x-twitter"></i>, url: 'https://x.com', color: '#0284c7' },
+    { name: <i className="fa-brands fa-instagram"></i>, url: 'https://instagram.com', color: '#db2777' },
+    { name: <i className="fa-brands fa-discord"></i>, url: 'https://discord.com', color: '#4f46e5' },
   ];
 
   return (
@@ -191,9 +190,9 @@ export default function MainStudio() {
           transition={{ duration: 0.8, delay: 0.5 }}
           style={styles.socialLinks}
         >
-          {socials.map((soc) => (
+          {socials.map((soc, idx) => (
             <motion.a
-              key={soc.name}
+              key={idx}
               href={soc.url}
               target="_blank"
               rel="noopener noreferrer"
@@ -212,7 +211,7 @@ export default function MainStudio() {
         </motion.div>
       )}
 
-      {/* 잠금 안내 알림 토스트 (잠긴 카드를 클릭했을 때만 표시) */}
+      {/* 잠금 안내 알림 토스트 */}
       <AnimatePresence>
         {lockedNotice && (
           <motion.div
@@ -242,7 +241,11 @@ export default function MainStudio() {
       {!activeApp && (
         <motion.div
           style={{
-            display: 'flex', gap: '2.5rem', alignItems: 'center', zIndex: 3,
+            display: 'flex',
+            gap: '2.5rem',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 3,
             rotateX: motionRotateX,
             rotateY: motionRotateY,
             transformStyle: 'preserve-3d',
@@ -255,15 +258,14 @@ export default function MainStudio() {
           {Object.entries(apps).map(([key, app]) => (
             <motion.div
               key={key}
-              layoutId={!app.isLocked ? `card-${key}` : undefined}
-              animate={lockedNotice === key ? { x: [-10, 10, -10, 10, 0] } : {}} // 🟢 잠겼을 때 좌우로 흔들리는 모션
+              animate={lockedNotice === key ? { x: [-10, 10, -10, 10, 0] } : {}}
               transition={{ duration: 0.4 }}
               whileHover={!app.isLocked ? { scale: 1.03, y: -8, backgroundColor: 'rgba(255, 255, 255, 0.98)', borderColor: theme.accentColor, boxShadow: `0 25px 50px ${theme.accentGlow}` } : { scale: 1.01 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => handleCardClick(key, app)}
               style={{
                 width: '280px', height: '380px',
-                backgroundColor: app.isLocked ? 'rgba(255, 255, 255, 0.65)' : theme.cardBg, // 잠긴 카드는 살짝 투명하게
+                backgroundColor: app.isLocked ? 'rgba(255, 255, 255, 0.65)' : theme.cardBg,
                 borderRadius: '24px',
                 border: `1px solid ${theme.cardBorder}`,
                 cursor: app.isLocked ? 'not-allowed' : 'pointer',
@@ -274,7 +276,7 @@ export default function MainStudio() {
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
-                opacity: app.isLocked ? 0.75 : 1, // 잠긴 카드 시각적 비활성화 느낌
+                opacity: app.isLocked ? 0.75 : 1,
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -289,13 +291,13 @@ export default function MainStudio() {
                   color: app.color,
                   boxShadow: '0 4px 10px rgba(12, 74, 110, 0.05)'
                 }}>
-                  {app.isLocked ? '🔒' : app.symbol} {/* 🟢 잠긴 카드는 자물쇠 아이콘 표시 */}
+                  {app.isLocked ? '🔒' : app.symbol}
                 </div>
               </div>
 
               <div>
                 <h3 style={{ color: theme.textPrimary, fontSize: '1.6rem', margin: '0 0 10px 0', fontWeight: 700, lineHeight: '1.3' }}>
-                  {app.title.split(' // ')[0]}<br/>
+                  {app.title.split(' // ')[0]}<br />
                   <span style={{ color: app.color }}>{app.title.split(' // ')[1]}</span>
                 </h3>
                 <p style={{ color: theme.textSecondary, fontSize: '0.9rem', margin: 0, fontWeight: 400, lineHeight: '1.5' }}>{app.subtitle}</p>
@@ -310,11 +312,14 @@ export default function MainStudio() {
         </motion.div>
       )}
 
-      {/* 선택된 하위 컴포넌트 뷰 */}
+      {/* 선택된 하위 컴포넌트 뷰 (레이아웃 충돌 방지를 위해 layoutId 제거 후 깔끔한 페이드인 적용) */}
       <AnimatePresence>
         {activeApp && (
           <motion.div
-            layoutId={`card-${activeApp}`}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
             style={{
               position: 'absolute',
               inset: 0,

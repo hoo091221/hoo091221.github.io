@@ -1577,3 +1577,21 @@ body {
     align-items: center;
     gap: 6px;
 }
+
+
+/* 브라우저 기본 여백 강제 초기화 및 스크롤 차단 */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #f0f9ff;
+}
