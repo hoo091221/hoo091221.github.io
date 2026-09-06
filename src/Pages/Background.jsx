@@ -1,164 +1,332 @@
-import React, { useEffect, useState } from 'react';
-import { motion, useAnimation } from 'framer-motion';
-import MusicSection from './MusicSection';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
+
 import WebSection from './WebSection';
-import '../CSS/style.css';
+import PowerPointSection from './PowerPointSection';
+import MusicSection from './MusicSection';
 
-export default function Background() {
-  const gridControls = useAnimation();
-  const textControls = useAnimation();
+const theme = {
+  bgBase: '#f0f9ff',
+  bgGradStart: '#e0f2fe',
+  bgGradEnd: '#bae6fd',
+  textPrimary: '#0c4a6e',
+  textSecondary: '#075985',
+  accentColor: '#0284c7',
+  accentGlow: 'rgba(2, 132, 199, 0.25)',
+  cardBg: 'rgba(255, 255, 255, 0.85)',
+  cardBorder: 'rgba(2, 132, 199, 0.2)',
+  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+};
 
-  const [activeSection, setActiveSection] = useState('main');
-  // 버튼 마운트 게이트를 제거하고, Framer Motion 자체 변수(animate 속성 제어)로 즉시 제어합니다.
-  const [startBtnAnimation, setStartBtnAnimation] = useState(false);
+const styles = {
+  global: {
+    width: '100vw',
+    height: '100vh',
+    background: `linear-gradient(135deg, ${theme.bgGradStart} 0%, ${theme.bgBase} 50%, ${theme.bgGradEnd} 100%)`,
+    overflow: 'hidden',
+    fontFamily: theme.fontFamily,
+    position: 'relative',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    perspective: '2000px',
+  },
+  lightLeak: {
+    position: 'absolute',
+    top: '-20%',
+    right: '-10%',
+    width: '600px',
+    height: '600px',
+    background: `radial-gradient(circle, rgba(125, 211, 252, 0.4) 0%, transparent 70%)`,
+    filter: 'blur(80px)',
+    pointerEvents: 'none',
+    zIndex: 0,
+  },
+  dotPattern: {
+    position: 'absolute',
+    inset: 0,
+    backgroundImage: 'radial-gradient(rgba(12, 74, 110, 0.05) 1px, transparent 0)',
+    backgroundSize: '24px 24px',
+    pointerEvents: 'none',
+    zIndex: 1,
+    opacity: 0.6,
+  },
+  titleArea: {
+    position: 'absolute',
+    top: '8vh',
+    left: '5vw',
+    zIndex: 10,
+    pointerEvents: 'none',
+  },
+  socialLinks: {
+    position: 'absolute',
+    top: '8vh',
+    right: '5vw',
+    display: 'flex',
+    gap: '1.2rem',
+    zIndex: 10,
+  },
+};
 
-  const a = 60;
-  const cols = 22; 
-  const rows = 18; 
+export default function MainStudio() {
+  const [activeApp, setActiveApp] = useState(null);
+  const [isBooted, setIsBooted] = useState(false);
+  const [lockedNotice, setLockedNotice] = useState(null); // 🟢 잠김 안내 토스트 상태
 
-  const gridWidth = cols * a;
-  const gridHeight = (rows - 1) * a + a / 2;
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
 
-  const horizontalLines = [];
-  let currentY = 0;
-  horizontalLines.push(currentY); 
-  currentY += a / 2; 
-  for (let i = 1; i <= rows; i++) {
-    horizontalLines.push(currentY);
-    currentY += a;
-  }
+  const springConfig = { damping: 55, stiffness: 45 };
+  const cursorX = useSpring(mouseX, springConfig);
+  const cursorY = useSpring(mouseY, springConfig);
 
-  const verticalLines = [];
-  for (let i = 0; i <= cols; i++) {
-    verticalLines.push(i * a);
-  }
+  const motionRotateX = useTransform(cursorY, [-0.5, 0.5], ["1.5deg", "-1.5deg"]);
+  const motionRotateY = useTransform(cursorX, [-0.5, 0.5], ["-1.5deg", "1.5deg"]);
+
+  const handleMouseMove = (e) => {
+    const { innerWidth, innerHeight } = window;
+    mouseX.set((e.clientX / innerWidth) - 0.5);
+    mouseY.set((e.clientY / innerHeight) - 0.5);
+  };
 
   useEffect(() => {
-    if (activeSection === 'main') {
-      setStartBtnAnimation(false);
+    const timer = setTimeout(() => setIsBooted(true), 1400);
+    return () => clearTimeout(timer);
+  }, []);
 
-      const sequence = async () => {
-        await new Promise((resolve) => setTimeout(resolve, 50));
-
-        // 1. 격자판 회전 및 확대 연출 (0.3초 후 시작)
-        gridControls.start({
-          rotate: 0,
-          scale: 2.0,
-          transition: {
-            duration: 3.2,
-            ease: [0.25, 1, 0.5, 1],
-            delay: 0.3,
-          },
-        });
-
-        // 2. 글씨 타이핑 드로잉 시작 (1.5초 후 시작)
-        await textControls.start({
-          strokeDashoffset: 0,
-          transition: { duration: 2.0, ease: "easeInOut", delay: 1.5 }
-        });
-        
-        // ⚡ [속도 극대화]: 글자 획이 다 그어지자마자 '0초' 딜레이로 바로 버튼 애니메이션을 켭니다.
-        setStartBtnAnimation(true);
-
-        // 3. 내부 색상 채우기는 버튼 등장과 동시에 부드럽게 배경으로 깔리게 처리
-        textControls.start({
-          fill: "rgba(0, 0, 0, 0.05)",
-          transition: { duration: 0.4 }
-        });
-      };
-
-      sequence();
-    }
-  }, [activeSection, gridControls, textControls]);
-
-  // 더 스피디하고 리드미컬하게 통-통-통 튀어나오도록 간격 및 탄성(Spring) 조정
-  const containerVariants = {
-    initial: {},
-    animate: {
-      transition: { 
-        staggerChildren: 0.08 // 0.12초에서 0.08초로 단축하여 연속 배치 속도감 업
-      }
+  const apps = {
+    vsc: { 
+      title: 'VSC // WEB DEVELOPMENT',
+      subtitle: '프론트엔드와 웹 유틸리티 아키텍처', 
+      tag: '01. DEVELOPMENT',
+      symbol: '</>',
+      color: '#0284c7',
+      isLocked: false, // 🟢 열려있는 프로젝트
+      component: <WebSection onBack={() => setActiveApp(null)} />
+    },
+    ppt: { 
+      title: 'PPT // DESIGN', 
+      subtitle: 'VBA 및 학교 세특 발표 PPT', 
+      tag: '02. CREATIVE CODING',
+      symbol: '3D',
+      color: '#0369a1',
+      isLocked: true, // 🟢 잠겨있는 프로젝트
+      component: <PowerPointSection onBack={() => setActiveApp(null)} />
+    },
+    fl: { 
+      title: 'FL // SOUND LAB', 
+      subtitle: '카와이 퓨처 베이스 신스 디자인', 
+      tag: '03. AUDIO LAB',
+      symbol: '♫',
+      color: '#0ea5e9',
+      isLocked: true, // 🟢 잠겨있는 프로젝트
     }
   };
 
-  const buttonVariants = {
-    initial: { opacity: 0, y: 15 },
-    animate: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { type: "spring", stiffness: 160, damping: 13 } 
+  const handleCardClick = (key, app) => {
+    if (app.isLocked) {
+      // 잠긴 카드를 누르면 흔들림 효과와 함께 안내 문구 표시
+      setLockedNotice(key);
+      setTimeout(() => setLockedNotice(null), 1500);
+      return;
     }
+    setActiveApp(key);
   };
+
+  const socials = [
+    { name: 'X', url: 'https://x.com', color: '#0284c7' },
+    { name: 'INSTAGRAM', url: 'https://instagram.com', color: '#db2777' },
+    { name: 'DISCORD', url: 'https://discord.com', color: '#4f46e5' },
+  ];
 
   return (
-    <div className={`archive-container theme-${activeSection}`}>
-      <motion.div
-        initial={{ rotate: -30, scale: 1.2 }}
-        animate={gridControls}
-        className="grid-wrapper"
-        style={{ 
-          width: gridWidth, 
-          height: gridHeight,
-          display: activeSection === 'main' ? 'flex' : 'none' 
-        }}
-      >
-        <svg className="grid-svg-board" viewBox={`0 0 ${gridWidth} ${gridHeight}`} width={gridWidth} height={gridHeight}>
-          {horizontalLines.map((y, index) => (
-            <motion.line
-              key={`h-${index}`} x1="0" y1={y} x2={gridWidth} y2={y}
-              stroke="rgba(220, 38, 38, 0.65)" strokeWidth="1" strokeDasharray={gridWidth}
-              initial={{ strokeDashoffset: gridWidth }} animate={{ strokeDashoffset: 0 }}
-              transition={{ duration: 1.5, delay: index * 0.06, ease: "easeInOut" }}
-            />
-          ))}
-          {verticalLines.map((x, index) => (
-            <motion.line
-              key={`v-${index}`} x1={x} y1="0" x2={x} y2={gridHeight}
-              stroke="rgba(220, 38, 38, 0.65)" strokeWidth="1" strokeDasharray={gridHeight}
-              initial={{ strokeDashoffset: gridHeight }} animate={{ strokeDashoffset: 0 }}
-              transition={{ duration: 1.5, delay: index * 0.05, ease: "easeInOut" }}
-            />
-          ))}
-        </svg>
+    <div onMouseMove={handleMouseMove} style={styles.global}>
+      <div style={styles.lightLeak} />
+      <div style={styles.dotPattern} />
 
-        {/* 메인 레이아웃 센터 보존 레이어 */}
-        <div className="content-overlay-layer">
-          {/* 고정 틀 영역 내부 배치로 글씨가 수직 이동하는 버그 원천 봉쇄 */}
-          <div className="title-fixed-zone">
-            <svg className="title-svg" viewBox="0 0 400 120" fill="none">
-              <motion.text
-                x="50%" y="50%" dominantBaseline="middle" textAnchor="middle" className="svg-text"
-                strokeDasharray="600" initial={{ strokeDashoffset: 600, fill: "rgba(0, 0, 0, 0)" }}
-                animate={textControls}
-              >
-                Archive
-              </motion.text>
-            </svg>
+      {/* 부팅 인트로 */}
+      <AnimatePresence>
+        {!isBooted && (
+          <div style={{ position: 'absolute', inset: 0, zIndex: 100, display: 'flex', pointerEvents: 'none' }}>
+            <motion.div
+              initial={{ x: '0%' }}
+              exit={{ x: '-100%', transition: { duration: 0.9, ease: [0.77, 0, 0.175, 1] } }}
+              style={{ width: '50%', height: '100%', backgroundColor: '#e0f2fe', borderRight: '1px solid rgba(2, 132, 199, 0.1)' }}
+            />
+            <motion.div
+              initial={{ x: '0%' }}
+              exit={{ x: '100%', transition: { duration: 0.9, ease: [0.77, 0, 0.175, 1] } }}
+              style={{ width: '50%', height: '100%', backgroundColor: '#e0f2fe' }}
+            />
+            <motion.div
+              initial={{ opacity: 1, scale: 0.95, filter: 'blur(6px)' }}
+              exit={{ opacity: 0, scale: 1.05, filter: 'blur(0px)', transition: { duration: 0.3 } }}
+              style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+            >
+              <div style={{ color: '#0284c7', fontSize: '1.2rem', letterSpacing: '14px', fontWeight: 600 }}>
+                LOADING // ARCHIVE
+              </div>
+            </motion.div>
           </div>
+        )}
+      </AnimatePresence>
 
-          {/* 버튼 구역 배치 */}
-          <motion.div 
-            className="menu-button-group" 
-            variants={containerVariants}
-            initial="initial"
-            animate={startBtnAnimation ? "animate" : "initial"}
+      {!activeApp && (
+        <motion.div
+          initial={{ opacity: 0, y: -20, filter: 'blur(8px)' }}
+          animate={isBooted ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          style={styles.titleArea}
+        >
+          <h1 style={{ color: theme.textPrimary, fontSize: '1.4rem', margin: 0, fontWeight: 700, letterSpacing: '4px' }}>ARCHIVE</h1>
+          <p style={{ color: theme.textSecondary, marginTop: '6px', fontSize: '0.8rem', letterSpacing: '2px', fontWeight: 500 }}>PROJECT PORTFOLIO</p>
+        </motion.div>
+      )}
+
+      {!activeApp && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={isBooted ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          style={styles.socialLinks}
+        >
+          {socials.map((soc) => (
+            <motion.a
+              key={soc.name}
+              href={soc.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ scale: 1.08, y: -2 }}
+              style={{
+                color: theme.textSecondary, fontSize: '0.8rem', letterSpacing: '1px',
+                textDecoration: 'none', fontWeight: 600,
+                transition: 'color 0.2s',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.color = soc.color}
+              onMouseLeave={(e) => e.currentTarget.style.color = theme.textSecondary}
+            >
+              {soc.name}
+            </motion.a>
+          ))}
+        </motion.div>
+      )}
+
+      {/* 잠금 안내 알림 토스트 (잠긴 카드를 클릭했을 때만 표시) */}
+      <AnimatePresence>
+        {lockedNotice && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -10, scale: 0.9 }}
+            style={{
+              position: 'absolute',
+              top: '18vh',
+              zIndex: 200,
+              backgroundColor: '#0284c7',
+              color: '#ffffff',
+              padding: '10px 20px',
+              borderRadius: '30px',
+              fontSize: '0.85rem',
+              fontWeight: 700,
+              letterSpacing: '1px',
+              boxShadow: '0 10px 25px rgba(2, 132, 199, 0.4)',
+            }}
           >
-            <motion.button className="menu-btn" variants={buttonVariants} onClick={() => setActiveSection('web')}>
-              웹 프로젝트 보기
-            </motion.button>
-            <motion.button className="menu-btn" variants={buttonVariants} onClick={() => setActiveSection('music')}>
-              작곡 노트 보기
-            </motion.button>
-            <motion.button className="menu-btn" variants={buttonVariants} onClick={() => setActiveSection('sketch')}>
-              PPT 작업물 보기
-            </motion.button>
+            🔒 현재 준비 중인 프로젝트입니다 (Locked)
           </motion.div>
-        </div>
-      </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* 라우팅 컴포넌트 */}
-      {activeSection === 'music' && <MusicSection onBack={() => setActiveSection('main')} />}
-      {activeSection === 'web' && <WebSection onBack={() => setActiveSection('main')} />}
+      {/* 메인 선택 카드 리스트 */}
+      {!activeApp && (
+        <motion.div
+          style={{
+            display: 'flex', gap: '2.5rem', alignItems: 'center', zIndex: 3,
+            rotateX: motionRotateX,
+            rotateY: motionRotateY,
+            transformStyle: 'preserve-3d',
+          }}
+          initial={{ opacity: 0, scale: 0.92, y: 30, filter: 'blur(10px)' }}
+          animate={isBooted ? { opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' } : {}}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 1, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+        >
+          {Object.entries(apps).map(([key, app]) => (
+            <motion.div
+              key={key}
+              layoutId={!app.isLocked ? `card-${key}` : undefined}
+              animate={lockedNotice === key ? { x: [-10, 10, -10, 10, 0] } : {}} // 🟢 잠겼을 때 좌우로 흔들리는 모션
+              transition={{ duration: 0.4 }}
+              whileHover={!app.isLocked ? { scale: 1.03, y: -8, backgroundColor: 'rgba(255, 255, 255, 0.98)', borderColor: theme.accentColor, boxShadow: `0 25px 50px ${theme.accentGlow}` } : { scale: 1.01 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => handleCardClick(key, app)}
+              style={{
+                width: '280px', height: '380px',
+                backgroundColor: app.isLocked ? 'rgba(255, 255, 255, 0.65)' : theme.cardBg, // 잠긴 카드는 살짝 투명하게
+                borderRadius: '24px',
+                border: `1px solid ${theme.cardBorder}`,
+                cursor: app.isLocked ? 'not-allowed' : 'pointer',
+                overflow: 'hidden',
+                boxShadow: '0 15px 35px rgba(12, 74, 110, 0.08), inset 0 1px 0 rgba(255,255,255,1)',
+                backdropFilter: 'blur(20px)',
+                padding: '2.5rem',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'space-between',
+                opacity: app.isLocked ? 0.75 : 1, // 잠긴 카드 시각적 비활성화 느낌
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ color: app.color, fontSize: '0.7rem', letterSpacing: '2px', fontWeight: 700 }}>{app.tag}</span>
+                <div style={{
+                  width: '52px', height: '52px',
+                  borderRadius: '14px',
+                  backgroundColor: 'white',
+                  border: `1px solid ${theme.cardBorder}`,
+                  display: 'flex', justifyContent: 'center', alignItems: 'center',
+                  fontSize: '1.4rem', fontWeight: 700, fontFamily: 'monospace',
+                  color: app.color,
+                  boxShadow: '0 4px 10px rgba(12, 74, 110, 0.05)'
+                }}>
+                  {app.isLocked ? '🔒' : app.symbol} {/* 🟢 잠긴 카드는 자물쇠 아이콘 표시 */}
+                </div>
+              </div>
+
+              <div>
+                <h3 style={{ color: theme.textPrimary, fontSize: '1.6rem', margin: '0 0 10px 0', fontWeight: 700, lineHeight: '1.3' }}>
+                  {app.title.split(' // ')[0]}<br/>
+                  <span style={{ color: app.color }}>{app.title.split(' // ')[1]}</span>
+                </h3>
+                <p style={{ color: theme.textSecondary, fontSize: '0.9rem', margin: 0, fontWeight: 400, lineHeight: '1.5' }}>{app.subtitle}</p>
+              </div>
+
+              <div style={{ color: app.isLocked ? '#94a3b8' : app.color, fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 700, letterSpacing: '1px', borderTop: `1px solid ${theme.cardBorder}`, paddingTop: '1.5rem' }}>
+                <span>{app.isLocked ? 'LOCKED PROJECT' : 'VIEW PROJECT'}</span>
+                <span>{app.isLocked ? '✕' : '→'}</span>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      )}
+
+      {/* 선택된 하위 컴포넌트 뷰 */}
+      <AnimatePresence>
+        {activeApp && (
+          <motion.div
+            layoutId={`card-${activeApp}`}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              zIndex: 50,
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          >
+            {apps[activeApp].component}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
