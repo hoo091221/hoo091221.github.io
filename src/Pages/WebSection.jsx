@@ -14,7 +14,14 @@ const webCards = [
 export default function WebSection({ onBack }) {
   const [isExiting, setIsExiting] = useState(false);
   const [typedText, setTypedText] = useState("");
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const targetText = "const projectList = await fetch('./repository/utilities.json');";
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     let index = 0;
@@ -51,6 +58,13 @@ export default function WebSection({ onBack }) {
           opacity: 1;
           transform: scale(1);
           transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        @media (max-width: 768px) {
+          .sub-panel.vsc-theme {
+            width: 95vw;
+            height: 92vh;
+          }
         }
 
         .sub-panel.vsc-theme.hidden {
@@ -95,6 +109,16 @@ export default function WebSection({ onBack }) {
           color: #858585;
           border: 1px solid #3c3c3c;
           letter-spacing: 0.5px;
+          max-width: 40vw;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+
+        @media (max-width: 768px) {
+          .window-address-bar {
+            display: none;
+          }
         }
 
         .navbar-close-btn {
@@ -131,6 +155,12 @@ export default function WebSection({ onBack }) {
           justify-content: space-between;
           user-select: none;
           flex-shrink: 0;
+        }
+
+        @media (max-width: 768px) {
+          .vsc-sidebar {
+            display: none;
+          }
         }
 
         .folder-title {
@@ -212,6 +242,14 @@ export default function WebSection({ onBack }) {
           background-color: #1e1e1e;
           line-height: 1.5;
           flex-shrink: 0;
+          word-break: break-all;
+        }
+
+        @media (max-width: 768px) {
+          .vsc-terminal-line {
+            padding: 10px 16px;
+            font-size: 11px;
+          }
         }
 
         .code-blue { color: #c586c0; }
@@ -240,6 +278,14 @@ export default function WebSection({ onBack }) {
           align-content: start;
         }
 
+        @media (max-width: 768px) {
+          .vsc-grid-cards {
+            padding: 16px;
+            grid-template-columns: 1fr;
+            gap: 12px;
+          }
+        }
+
         .vsc-card {
           background-color: #252526;
           border: 1px solid #333333;
@@ -252,6 +298,13 @@ export default function WebSection({ onBack }) {
           min-height: 180px;
           box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
           transition: transform 0.2s ease, border-color 0.2s ease, background-color 0.2s ease;
+        }
+
+        @media (max-width: 768px) {
+          .vsc-card {
+            min-height: 140px;
+            padding: 16px;
+          }
         }
 
         .vsc-card:hover {
@@ -316,7 +369,7 @@ export default function WebSection({ onBack }) {
         </div>
 
         <div className="vsc-window-body">
-          {/* 가상 사이드바 에디터 패널 */}
+          {/* 가상 사이드바 에디터 패널 (모바일 자동 숨김) */}
           <div className="vsc-sidebar">
             <div>
               <div className="folder-title">EXPLORER</div>
@@ -338,7 +391,7 @@ export default function WebSection({ onBack }) {
               <span className="code-green">{typedText}</span><span className="cursor-blink">|</span>
             </div>
 
-            {/* 유틸리티 카드 목록 격자 배치 */}
+            {/* 유틸리티 카드 목록 격자 배치 (모바일 1열 전환) */}
             <div className="vsc-grid-cards">
               {webCards.map((card, i) => (
                 <motion.div 

@@ -4,7 +4,6 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import WebSection from './WebSection';
 import PowerPointSection from './PowerPointSection';
 import MusicSection from './MusicSection';
-// import "https://kit.fontawesome.com/710646e3fd.js";
 
 const theme = {
   bgBase: '#f0f9ff',
@@ -29,7 +28,7 @@ const styles = {
     position: 'relative',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center',        // 🟢 다시 정중앙 정렬로 복구
+    alignItems: 'center',
     perspective: '2000px',
   },
   lightLeak: {
@@ -52,27 +51,20 @@ const styles = {
     zIndex: 1,
     opacity: 0.6,
   },
-  titleArea: {
-    position: 'absolute',
-    top: '8vh',
-    left: '5vw',
-    zIndex: 10,
-    pointerEvents: 'none',
-  },
-  socialLinks: {
-    position: 'absolute',
-    top: '8vh',
-    right: '5vw',
-    display: 'flex',
-    gap: '1.2rem',
-    zIndex: 10,
-  },
 };
 
 export default function MainStudio() {
   const [activeApp, setActiveApp] = useState(null);
   const [isBooted, setIsBooted] = useState(false);
   const [lockedNotice, setLockedNotice] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  // 화면 크기 변경 감지
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -85,6 +77,7 @@ export default function MainStudio() {
   const motionRotateY = useTransform(cursorX, [-0.5, 0.5], ["-1.5deg", "1.5deg"]);
 
   const handleMouseMove = (e) => {
+    if (isMobile) return; // 모바일에서는 3D틸트 효과 비활성화로 성능 보호
     const { innerWidth, innerHeight } = window;
     mouseX.set((e.clientX / innerWidth) - 0.5);
     mouseY.set((e.clientY / innerHeight) - 0.5);
@@ -171,24 +164,39 @@ export default function MainStudio() {
         )}
       </AnimatePresence>
 
+      {/* 상단 타이틀 영역 (반응형 위치 조정) */}
       {!activeApp && (
         <motion.div
           initial={{ opacity: 0, y: -20, filter: 'blur(8px)' }}
           animate={isBooted ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
           transition={{ duration: 0.8, delay: 0.4 }}
-          style={styles.titleArea}
+          style={{
+            position: 'absolute',
+            top: isMobile ? '4vh' : '8vh',
+            left: isMobile ? '6vw' : '5vw',
+            zIndex: 10,
+            pointerEvents: 'none',
+          }}
         >
-          <h1 style={{ color: theme.textPrimary, fontSize: '1.4rem', margin: 0, fontWeight: 700, letterSpacing: '4px' }}>ARCHIVE</h1>
-          <p style={{ color: theme.textSecondary, marginTop: '6px', fontSize: '0.8rem', letterSpacing: '2px', fontWeight: 500 }}>PROJECT PORTFOLIO</p>
+          <h1 style={{ color: theme.textPrimary, fontSize: isMobile ? '1.1rem' : '1.4rem', margin: 0, fontWeight: 700, letterSpacing: '4px' }}>ARCHIVE</h1>
+          <p style={{ color: theme.textSecondary, marginTop: '4px', fontSize: isMobile ? '0.7rem' : '0.8rem', letterSpacing: '2px', fontWeight: 500 }}>PROJECT PORTFOLIO</p>
         </motion.div>
       )}
 
+      {/* 소셜 링크 영역 */}
       {!activeApp && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={isBooted ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.5 }}
-          style={styles.socialLinks}
+          style={{
+            position: 'absolute',
+            top: isMobile ? '4vh' : '8vh',
+            right: isMobile ? '6vw' : '5vw',
+            display: 'flex',
+            gap: '1rem',
+            zIndex: 10,
+          }}
         >
           {socials.map((soc, idx) => (
             <motion.a
@@ -198,7 +206,7 @@ export default function MainStudio() {
               rel="noopener noreferrer"
               whileHover={{ scale: 1.08, y: -2 }}
               style={{
-                color: theme.textSecondary, fontSize: '0.8rem', letterSpacing: '1px',
+                color: theme.textSecondary, fontSize: isMobile ? '0.75rem' : '0.8rem', letterSpacing: '1px',
                 textDecoration: 'none', fontWeight: 600,
                 transition: 'color 0.2s',
               }}
@@ -220,35 +228,39 @@ export default function MainStudio() {
             exit={{ opacity: 0, y: -10, scale: 0.9 }}
             style={{
               position: 'absolute',
-              top: '18vh',
+              top: '15vh',
               zIndex: 200,
               backgroundColor: '#0284c7',
               color: '#ffffff',
-              padding: '10px 20px',
+              padding: '8px 16px',
               borderRadius: '30px',
-              fontSize: '0.85rem',
+              fontSize: '0.8rem',
               fontWeight: 700,
               letterSpacing: '1px',
               boxShadow: '0 10px 25px rgba(2, 132, 199, 0.4)',
             }}
           >
-            🔒 현재 준비 중인 프로젝트입니다 (Locked)
+            🔒 현재 준비 중인 프로젝트입니다
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* 메인 선택 카드 리스트 */}
+      {/* 메인 선택 카드 리스트 (모바일 대응 Flex Column 전환 및 스크롤 허용) */}
       {!activeApp && (
         <motion.div
           style={{
             display: 'flex',
-            gap: '2.5rem',
+            flexDirection: isMobile ? 'column' : 'row',
+            gap: isMobile ? '1rem' : '2.5rem',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 3,
-            rotateX: motionRotateX,
-            rotateY: motionRotateY,
+            rotateX: isMobile ? 0 : motionRotateX,
+            rotateY: isMobile ? 0 : motionRotateY,
             transformStyle: 'preserve-3d',
+            maxHeight: isMobile ? '80vh' : 'none',
+            overflowY: isMobile ? 'auto' : 'visible',
+            padding: isMobile ? '80px 20px 20px 20px' : '0',
           }}
           initial={{ opacity: 0, scale: 0.92, y: 30, filter: 'blur(10px)' }}
           animate={isBooted ? { opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' } : {}}
@@ -264,15 +276,17 @@ export default function MainStudio() {
               whileTap={{ scale: 0.98 }}
               onClick={() => handleCardClick(key, app)}
               style={{
-                width: '280px', height: '380px',
+                width: isMobile ? '85vw' : '280px',
+                maxWidth: '320px',
+                height: isMobile ? '150px' : '380px',
                 backgroundColor: app.isLocked ? 'rgba(255, 255, 255, 0.65)' : theme.cardBg,
-                borderRadius: '24px',
+                borderRadius: '20px',
                 border: `1px solid ${theme.cardBorder}`,
                 cursor: app.isLocked ? 'not-allowed' : 'pointer',
                 overflow: 'hidden',
                 boxShadow: '0 15px 35px rgba(12, 74, 110, 0.08), inset 0 1px 0 rgba(255,255,255,1)',
                 backdropFilter: 'blur(20px)',
-                padding: '2.5rem',
+                padding: isMobile ? '1.2rem 1.5rem' : '2.5rem',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
@@ -280,14 +294,14 @@ export default function MainStudio() {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: app.color, fontSize: '0.7rem', letterSpacing: '2px', fontWeight: 700 }}>{app.tag}</span>
+                <span style={{ color: app.color, fontSize: '0.65rem', letterSpacing: '2px', fontWeight: 700 }}>{app.tag}</span>
                 <div style={{
-                  width: '52px', height: '52px',
-                  borderRadius: '14px',
+                  width: isMobile ? '38px' : '52px', height: isMobile ? '38px' : '52px',
+                  borderRadius: '12px',
                   backgroundColor: 'white',
                   border: `1px solid ${theme.cardBorder}`,
                   display: 'flex', justifyContent: 'center', alignItems: 'center',
-                  fontSize: '1.4rem', fontWeight: 700, fontFamily: 'monospace',
+                  fontSize: isMobile ? '1rem' : '1.4rem', fontWeight: 700, fontFamily: 'monospace',
                   color: app.color,
                   boxShadow: '0 4px 10px rgba(12, 74, 110, 0.05)'
                 }}>
@@ -296,23 +310,27 @@ export default function MainStudio() {
               </div>
 
               <div>
-                <h3 style={{ color: theme.textPrimary, fontSize: '1.6rem', margin: '0 0 10px 0', fontWeight: 700, lineHeight: '1.3' }}>
-                  {app.title.split(' // ')[0]}<br />
+                <h3 style={{ color: theme.textPrimary, fontSize: isMobile ? '1.1rem' : '1.6rem', margin: isMobile ? '4px 0' : '0 0 10px 0', fontWeight: 700, lineHeight: '1.3' }}>
+                  {app.title.split(' // ')[0]}
+                  {!isMobile && <br />}
+                  {isMobile && ' // '}
                   <span style={{ color: app.color }}>{app.title.split(' // ')[1]}</span>
                 </h3>
-                <p style={{ color: theme.textSecondary, fontSize: '0.9rem', margin: 0, fontWeight: 400, lineHeight: '1.5' }}>{app.subtitle}</p>
+                {!isMobile && <p style={{ color: theme.textSecondary, fontSize: '0.9rem', margin: 0, fontWeight: 400, lineHeight: '1.5' }}>{app.subtitle}</p>}
               </div>
 
-              <div style={{ color: app.isLocked ? '#94a3b8' : app.color, fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 700, letterSpacing: '1px', borderTop: `1px solid ${theme.cardBorder}`, paddingTop: '1.5rem' }}>
-                <span>{app.isLocked ? 'LOCKED PROJECT' : 'VIEW PROJECT'}</span>
-                <span>{app.isLocked ? '✕' : '→'}</span>
-              </div>
+              {!isMobile && (
+                <div style={{ color: app.isLocked ? '#94a3b8' : app.color, fontSize: '0.8rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontWeight: 700, letterSpacing: '1px', borderTop: `1px solid ${theme.cardBorder}`, paddingTop: '1.5rem' }}>
+                  <span>{app.isLocked ? 'LOCKED PROJECT' : 'VIEW PROJECT'}</span>
+                  <span>{app.isLocked ? '✕' : '→'}</span>
+                </div>
+              )}
             </motion.div>
           ))}
         </motion.div>
       )}
 
-      {/* 선택된 하위 컴포넌트 뷰 (레이아웃 충돌 방지를 위해 layoutId 제거 후 깔끔한 페이드인 적용) */}
+      {/* 선택된 하위 컴포넌트 뷰 */}
       <AnimatePresence>
         {activeApp && (
           <motion.div
