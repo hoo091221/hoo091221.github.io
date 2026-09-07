@@ -113,11 +113,12 @@ export default function MainStudio() {
     },
     fl: {
       title: 'FL // SOUND LAB',
-      subtitle: '카와이 퓨처 베이스 신스 디자인',
+      subtitle: '카와이 퓨처베이스를 잘 만들고 싶은 이야기',
       tag: '03. AUDIO LAB',
       symbol: '♫',
       color: '#0ea5e9',
-      isLocked: true,
+      isLocked: false,
+      component: <MusicSection onBack={() => setActiveApp(null)} />
     }
   };
 
