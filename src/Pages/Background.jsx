@@ -132,9 +132,9 @@ export default function MainStudio() {
   };
 
   const socials = [
-    { name: <i className="fa-brands fa-x-twitter"></i>, url: 'https://x.com', color: '#0284c7' },
-    { name: <i className="fa-brands fa-instagram"></i>, url: 'https://instagram.com', color: '#db2777' },
-    { name: <i className="fa-brands fa-discord"></i>, url: 'https://discord.com', color: '#4f46e5' },
+    { name: <i className="fa-brands fa-x-twitter"></i>, url: 'https://x.com/hoo091221', color: '#0284c7' },
+    { name: <i className="fa-brands fa-instagram"></i>, url: 'https://www.instagram.com/hoo_091221', color: '#db2777' },
+    { name: <i className="fa-brands fa-discord"></i>, url: 'https://discord.com/channels/@me/1111901206030336031', color: '#4f46e5' },
   ];
 
   return (
