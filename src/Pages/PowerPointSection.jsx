@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const presentations = [
@@ -29,7 +29,7 @@ const presentations = [
       { id: 18, title: "슬라이드 18", startTime: 83, thumb: "./PowerPoint/1-1-english/슬라이드18.png" },
       { id: 19, title: "슬라이드 19", startTime: 87, thumb: "./PowerPoint/1-1-english/슬라이드19.png" },
       { id: 20, title: "슬라이드 20", startTime: 90, thumb: "./PowerPoint/1-1-english/슬라이드20.png" },
-      { id: 21, title: "슬라이드 21", startTime: 100, thumb: "./PowerPoint/1-1-english/슬라이드23.png" }
+      { id: 21, title: "슬라이드 21", startTime: 100, thumb: "./PowerPoint/1-1-english/슬라이드21.png" }
     ]
   },
   {
@@ -84,7 +84,6 @@ const presentations = [
       { id: 14, title: "슬라이드 14", startTime: 57, thumb: "./PowerPoint/1-1-social/슬라이드14.png" },
       { id: 15, title: "슬라이드 15", startTime: 60, thumb: "./PowerPoint/1-1-social/슬라이드15.png" },
       { id: 16, title: "슬라이드 16", startTime: 62, thumb: "./PowerPoint/1-1-social/슬라이드16.png" }
-      // { id: 4, title: "슬라이드 17", startTime: 105, thumb: "./PowerPoint/1-1-social/슬라이드17.png" }
     ]
   }
 ];
@@ -93,16 +92,67 @@ export default function PowerPointSection({ onBack }) {
   const [selectedPpt, setSelectedPpt] = useState(null);
   const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
+  
   const videoRef = useRef(null);
+  const sidebarRef = useRef(null);
+  const slideRefs = useRef([]);
+  const isProgrammaticSeek = useRef(false);
 
+  // 슬라이드 선택 또는 타임라인 변경 시 비디오 싱크 + 사이드바 내부 스크롤 조정
   useEffect(() => {
     if (selectedPpt && videoRef.current) {
       const targetTime = selectedPpt.slides[activeSlideIndex].startTime;
-      videoRef.current.currentTime = targetTime;
-      videoRef.current.play();
+      if (Math.abs(videoRef.current.currentTime - targetTime) > 0.5) {
+        isProgrammaticSeek.current = true;
+        videoRef.current.currentTime = targetTime;
+      }
+    }
+
+    // 전체 화면 창을 건드리지 않고, 사이드바 영역 안에서만 중앙으로 스크롤 이동
+    const sidebar = sidebarRef.current;
+    const activeThumb = slideRefs.current[activeSlideIndex];
+    if (sidebar && activeThumb) {
+      const targetScrollTop = activeThumb.offsetTop - sidebar.clientHeight / 2 + activeThumb.clientHeight / 2;
+      sidebar.scrollTo({
+        top: targetScrollTop,
+        behavior: "smooth",
+      });
     }
   }, [activeSlideIndex, selectedPpt]);
 
+  // 비디오 재생 중 시간에 따라 슬라이드 자동 동기화 (역방향 싱크)
+  const handleTimeUpdate = () => {
+    if (!selectedPpt || !videoRef.current) return;
+    if (isProgrammaticSeek.current) {
+      isProgrammaticSeek.current = false;
+      return;
+    }
+
+    const currentTime = videoRef.current.currentTime;
+    const slides = selectedPpt.slides;
+
+    let currentIndex = 0;
+    for (let i = 0; i < slides.length; i++) {
+      if (currentTime >= slides[i].startTime) {
+        currentIndex = i;
+      } else {
+        break;
+      }
+    }
+
+    if (currentIndex !== activeSlideIndex) {
+      setActiveSlideIndex(currentIndex);
+    }
+  };
+
+  const handleAnimateBack = useCallback(() => {
+    setIsExiting(true);
+    setTimeout(() => {
+      onBack();
+    }, 400);
+  }, [onBack]);
+
+  // 키보드 네비게이션 처리
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") {
@@ -121,14 +171,7 @@ export default function PowerPointSection({ onBack }) {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedPpt]);
-
-  const handleAnimateBack = () => {
-    setIsExiting(true);
-    setTimeout(() => {
-      onBack();
-    }, 400);
-  };
+  }, [selectedPpt, handleAnimateBack]);
 
   const handleSelectPpt = (ppt) => {
     setSelectedPpt(ppt);
@@ -158,7 +201,6 @@ export default function PowerPointSection({ onBack }) {
           pointer-events: none;
           transition: opacity 0.4s ease, transform 0.4s ease;
         }
-        /* PowerPoint Ribbon Header 스타일 */
         .ppt-app-header {
           background-color: #f8f8f8;
           border-bottom: 1px solid #e1e1e1;
@@ -172,7 +214,7 @@ export default function PowerPointSection({ onBack }) {
           align-items: center;
           justify-content: space-between;
           padding: 0 12px;
-          background-color: #b7472a; /* 파워포인트 주황색 포인트 */
+          background-color: #b7472a;
           color: #fff;
         }
         .ppt-back-btn {
@@ -215,7 +257,6 @@ export default function PowerPointSection({ onBack }) {
           overflow: hidden;
           position: relative;
         }
-        /* PPT 목록 화면 그리드 스타일 */
         .ppt-list-container {
           width: 100%;
           height: 100%;
@@ -244,7 +285,6 @@ export default function PowerPointSection({ onBack }) {
           width: 100%;
           height: 150px;
           background: #f0f0f0;
-          object-fit: cover;
           border-bottom: 1px solid #e8e8e8;
           display: flex;
           align-items: center;
@@ -265,7 +305,6 @@ export default function PowerPointSection({ onBack }) {
           font-size: 11px;
           color: #666;
         }
-        /* 재생 뷰 내부 파워포인트 레이아웃 (좌측 썸네일 사이드바 + 우측 캔버스) */
         .ppt-editor-layout {
           display: flex;
           width: 100%;
@@ -323,7 +362,6 @@ export default function PowerPointSection({ onBack }) {
           overflow: hidden;
           text-overflow: ellipsis;
         }
-        /* 우측 메인 비디오 스테이지 */
         .ppt-stage {
           flex: 1;
           background: #e2e6ea;
@@ -385,7 +423,6 @@ export default function PowerPointSection({ onBack }) {
       `}</style>
 
       <div className={`sub-panel ppt-workspace ${isExiting ? "hidden" : ""}`}>
-        {/* 파워포인트 앱 스타일 상단 타이틀 및 리본 메뉴 */}
         <header className="ppt-app-header">
           <div className="ppt-titlebar">
             <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -414,7 +451,6 @@ export default function PowerPointSection({ onBack }) {
           </div>
         </header>
 
-        {/* 본문 영역 */}
         <div className="ppt-body">
           <AnimatePresence mode="wait">
             {selectedPpt === null && (
@@ -451,12 +487,12 @@ export default function PowerPointSection({ onBack }) {
                 exit={{ opacity: 0 }}
                 className="ppt-editor-layout"
               >
-                {/* 왼쪽 슬라이드 썸네일 탐색기 사이드바 */}
-                <div className="ppt-sidebar">
+                <div className="ppt-sidebar" ref={sidebarRef}>
                   <div style={{ fontSize: "11px", fontWeight: "bold", color: "#666", marginBottom: "4px" }}>슬라이드 목차</div>
                   {selectedPpt.slides.map((slide, idx) => (
                     <div 
                       key={slide.id} 
+                      ref={(el) => (slideRefs.current[idx] = el)}
                       className={`sidebar-slide-thumb ${activeSlideIndex === idx ? "active" : ""}`}
                       onClick={() => setActiveSlideIndex(idx)}
                     >
@@ -475,16 +511,15 @@ export default function PowerPointSection({ onBack }) {
                   ))}
                 </div>
 
-                {/* 우측 비디오 재생 스테이지 */}
                 <div className="ppt-stage">
                   <div className="ppt-video-wrapper">
                     <video 
-                      key={selectedPpt.id}
                       ref={videoRef}
                       src={selectedPpt.videoSrc}
                       className="ppt-video-element"
                       controls
                       autoPlay
+                      onTimeUpdate={handleTimeUpdate}
                     />
                   </div>
 
