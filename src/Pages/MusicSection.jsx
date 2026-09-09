@@ -60,8 +60,8 @@ export default function MusicSection({ onBack }) {
 
     mainAudioRef.current = new Audio(selectedTrack.file);
 
-    // 🛑 [요청 반영 핵심]: 무한 반복(loop = true) 해제 ➡️ 단 한 번만 재생되도록 설정!
-    mainAudioRef.current.loop = false;
+    // 🛑 무한반복
+    mainAudioRef.current.loop = true;
 
     setBpm(selectedTrack.defaultBpm);
     setAudioProgress(0);
@@ -218,6 +218,11 @@ export default function MusicSection({ onBack }) {
   align-items: center;
   z-index: 9999;
   font-family: Consolas, monospace;
+        bottom: isMobile ? '52px' : '24px',
+        right: isMobile ? 'auto' : '28px',
+        left: isMobile ? '50%' : 'auto',
+        transform: isMobile ? 'translateX(-50%)' : 'none',
+        pointerEvents: 'none',
 }
 .boot-logo-text { font-size: 24px; font-weight: 800; color: #ff8800; letter-spacing: 4px; margin-bottom: 8px; }
 .boot-status-text { font-size: 11px; color: #666; letter-spacing: 2px; margin-bottom: 20px; }
