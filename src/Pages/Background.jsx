@@ -21,7 +21,7 @@ const theme = {
 };
 
 // 💡 사용할 블루 아카이브 월페이퍼 이미지 경로
-const WALLPAPER_URL = '/image/background.png';
+const WALLPAPER_URL = 'https://dszw1qtcnsa5e.cloudfront.net/community/20250715/339ef1d0-8b3d-470f-bb07-ff3080360d90/image.png';
 
 export default function MainStudio() {
   const [activeApp, setActiveApp] = useState(null);
@@ -79,7 +79,7 @@ export default function MainStudio() {
     ppt: {
       title: 'PPT // DESIGN',
       subtitle: 'VBA 및 학교 세특 발표 PPT',
-      tag: '02. POWERPOINT DESIGN',
+      tag: '02. CREATIVE CODING',
       symbol: <i className="fa-regular fa-file-powerpoint"></i>,
       color: '#0369a1',
       isLocked: false,
@@ -159,7 +159,7 @@ export default function MainStudio() {
       {/* 💡 블루 아카이브 감성 커서 장착 */}
       <BlueArchiveCursor isMobile={isMobile} />
 
-      {/* 💡 FL Studio(activeApp === 'fl') 진입 시 자동 음소거 연동 플레이어 */}
+      {/* 💡 FL Studio(activeApp === 'fl') 진입 시 자동 음소거 및 페이드 연동 플레이어 */}
       <MusicPlayer 
         isPlaying={isPlaying} 
         setIsPlaying={setIsPlaying} 
@@ -184,19 +184,32 @@ export default function MainStudio() {
       <div style={styles.lightLeak} />
       <div style={styles.dotPattern} />
 
-      {/* 부팅 인트로 */}
+      {/* 부팅 인트로 (양옆으로 열리는 반투명 블러 커튼 효과) */}
       <AnimatePresence>
         {!isBooted && (
           <div style={{ position: 'absolute', inset: 0, zIndex: 100, display: 'flex', pointerEvents: 'none' }}>
             <motion.div
               initial={{ x: '0%' }}
               exit={{ x: '-100%', transition: { duration: 0.9, ease: [0.77, 0, 0.175, 1] } }}
-              style={{ width: '50%', height: '100%', backgroundColor: '#e0f2fe', borderRight: '1px solid rgba(2, 132, 199, 0.1)' }}
+              style={{ 
+                width: '50%', 
+                height: '100%', 
+                backgroundColor: 'rgba(224, 242, 254, 0.5)', 
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                borderRight: '1px solid rgba(2, 132, 199, 0.15)' 
+              }}
             />
             <motion.div
               initial={{ x: '0%' }}
               exit={{ x: '100%', transition: { duration: 0.9, ease: [0.77, 0, 0.175, 1] } }}
-              style={{ width: '50%', height: '100%', backgroundColor: '#e0f2fe' }}
+              style={{ 
+                width: '50%', 
+                height: '100%', 
+                backgroundColor: 'rgba(224, 242, 254, 0.5)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)'
+              }}
             />
             <motion.div
               initial={{ opacity: 1, scale: 0.95, filter: 'blur(6px)' }}
