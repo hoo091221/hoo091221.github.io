@@ -1,425 +1,520 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// 📌 발표했던 PPT 슬라이드 데이터 (원하시는 이미지나 텍스트로 수정 가능합니다)
-const slides = [
+const presentations = [
   {
-    id: 1,
-    title: "11th Grade Chemistry: Chemical Bonds & Enthalpy",
-    subtitle: "2022 개정 교육과정 화학 과제 발표 자료",
-    content: "화학 결합 에너지와 반응열의 관계 분석. 공유 결합과 이온 결합에서의 에너지 출입 메커니즘 고찰.",
-    type: "title"
+    id: "1-1-english",
+    title: "1-1. 공통영어1 세특 발표",
+    date: "2025-07-15",
+    thumbnail: "/PowerPoint/1-1-english/슬라이드1.png",
+    videoSrc: "/PowerPoint/1-1-english/video.mp4",
+    slides: [
+      { id: 1, title: "슬라이드 1", startTime: 0, thumb: "/PowerPoint/1-1-english/슬라이드1.png" },
+      { id: 2, title: "슬라이드 2", startTime: 2, thumb: "/PowerPoint/1-1-english/슬라이드2.png" },
+      { id: 3, title: "슬라이드 3", startTime: 6, thumb: "/PowerPoint/1-1-english/슬라이드3.png" },
+      { id: 4, title: "슬라이드 4", startTime: 12, thumb: "/PowerPoint/1-1-english/슬라이드4.png" },
+      { id: 5, title: "슬라이드 5", startTime: 17, thumb: "/PowerPoint/1-1-english/슬라이드5.png" },
+      { id: 6, title: "슬라이드 6", startTime: 22, thumb: "/PowerPoint/1-1-english/슬라이드6.png" },
+      { id: 7, title: "슬라이드 7", startTime: 26, thumb: "/PowerPoint/1-1-english/슬라이드7.png" },
+      { id: 8, title: "슬라이드 8", startTime: 29, thumb: "/PowerPoint/1-1-english/슬라이드8.png" },
+      { id: 9, title: "슬라이드 9", startTime: 33, thumb: "/PowerPoint/1-1-english/슬라이드9.png" },
+      { id: 10, title: "슬라이드 10", startTime: 36, thumb: "/PowerPoint/1-1-english/슬라이드10.png" },
+      { id: 11, title: "슬라이드 11", startTime: 41, thumb: "/PowerPoint/1-1-english/슬라이드11.png" },
+      { id: 12, title: "슬라이드 12", startTime: 50, thumb: "/PowerPoint/1-1-english/슬라이드12.png" },
+      { id: 13, title: "슬라이드 13", startTime: 59, thumb: "/PowerPoint/1-1-english/슬라이드13.png" },
+      { id: 14, title: "슬라이드 14", startTime: 68, thumb: "/PowerPoint/1-1-english/슬라이드14.png" },
+      { id: 15, title: "슬라이드 15", startTime: 72, thumb: "/PowerPoint/1-1-english/슬라이드15.png" },
+      { id: 16, title: "슬라이드 16", startTime: 77, thumb: "/PowerPoint/1-1-english/슬라이드16.png" },
+      { id: 17, title: "슬라이드 17", startTime: 80, thumb: "/PowerPoint/1-1-english/슬라이드17.png" },
+      { id: 18, title: "슬라이드 18", startTime: 83, thumb: "/PowerPoint/1-1-english/슬라이드18.png" },
+      { id: 19, title: "슬라이드 19", startTime: 87, thumb: "/PowerPoint/1-1-english/슬라이드19.png" },
+      { id: 20, title: "슬라이드 20", startTime: 90, thumb: "/PowerPoint/1-1-english/슬라이드20.png" },
+      { id: 21, title: "슬라이드 21", startTime: 100, thumb: "/PowerPoint/1-1-english/슬라이드23.png" }
+    ]
   },
   {
-    id: 2,
-    title: "Electronegativity & Bond Energy",
-    subtitle: "전기음성도와 결합 에너지",
-    content: "• H-F, H-I, F-F 결합 에너지 비교 분석\n• 결합 길이와 극성에 따른 해리 에너지 차이 계산\n• 흡열 반응과 발열 반응의 엔탈피 변화량 측정값",
-    type: "content"
+    id: "1-1-korean",
+    title: "1-1. 공통국어1 세특 발표",
+    date: "2025-06-08",
+    thumbnail: "/PowerPoint/1-1-korean/슬라이드1.png",
+    videoSrc: "/PowerPoint/1-1-korean/video.mp4",
+    slides: [
+      { id: 1, title: "슬라이드 1", startTime: 0, thumb: "/PowerPoint/1-1-korean/슬라이드1.png" },
+      { id: 2, title: "슬라이드 2", startTime: 2, thumb: "/PowerPoint/1-1-korean/슬라이드2.png" },
+      { id: 3, title: "슬라이드 3", startTime: 4, thumb: "/PowerPoint/1-1-korean/슬라이드3.png" },
+      { id: 4, title: "슬라이드 4", startTime: 6, thumb: "/PowerPoint/1-1-korean/슬라이드4.png" },
+      { id: 5, title: "슬라이드 5", startTime: 7, thumb: "/PowerPoint/1-1-korean/슬라이드5.png" },
+      { id: 6, title: "슬라이드 6", startTime: 11, thumb: "/PowerPoint/1-1-korean/슬라이드6.png" },
+      { id: 7, title: "슬라이드 7", startTime: 12, thumb: "/PowerPoint/1-1-korean/슬라이드7.png" },
+      { id: 8, title: "슬라이드 8", startTime: 15, thumb: "/PowerPoint/1-1-korean/슬라이드8.png" },
+      { id: 9, title: "슬라이드 9", startTime: 19, thumb: "/PowerPoint/1-1-korean/슬라이드9.png" },
+      { id: 10, title: "슬라이드 10", startTime: 21, thumb: "/PowerPoint/1-1-korean/슬라이드10.png" },
+      { id: 11, title: "슬라이드 11", startTime: 25, thumb: "/PowerPoint/1-1-korean/슬라이드11.png" },
+      { id: 12, title: "슬라이드 12", startTime: 29, thumb: "/PowerPoint/1-1-korean/슬라이드12.png" },
+      { id: 13, title: "슬라이드 13", startTime: 32, thumb: "/PowerPoint/1-1-korean/슬라이드13.png" },
+      { id: 14, title: "슬라이드 14", startTime: 35, thumb: "/PowerPoint/1-1-korean/슬라이드14.png" },
+      { id: 15, title: "슬라이드 15", startTime: 38, thumb: "/PowerPoint/1-1-korean/슬라이드15.png" },
+      { id: 16, title: "슬라이드 16", startTime: 40, thumb: "/PowerPoint/1-1-korean/슬라이드16.png" },
+      { id: 17, title: "슬라이드 17", startTime: 43, thumb: "/PowerPoint/1-1-korean/슬라이드17.png" },
+      { id: 18, title: "슬라이드 18", startTime: 45, thumb: "/PowerPoint/1-1-korean/슬라이드18.png" },
+      { id: 19, title: "슬라이드 19", startTime: 55, thumb: "/PowerPoint/1-1-korean/슬라이드19.png" },
+      { id: 20, title: "슬라이드 20", startTime: 59, thumb: "/PowerPoint/1-1-korean/슬라이드20.png" }
+    ]
   },
   {
-    id: 3,
-    title: "VBA & Creative Coding Integration",
-    subtitle: "파워포인트 내 실시간 그래픽스 구동 실험",
-    content: "• PowerPoint VBA를 활용한 3D 레이캐스팅 엔진 구동\n• ADODB.Stream을 이용한 실시간 에디터 동기화 매크로 구현\n• 렌더링 최적화 및 WASD 입력 처리 방식",
-    type: "content"
-  },
-  {
-    id: 4,
-    title: "Conclusion & Future Works",
-    subtitle: "결론 및 향후 확장 계획",
-    content: "웹 표준 기술 및 파워포인트 자동화 환경의 융합 가능성 확인. 추가적인 유틸리티 아키텍처 확장 예정.",
-    type: "conclusion"
+    id: "1-1-social",
+    title: "1-1. 통합사회1 세특 발표",
+    date: "2025-05-31",
+    thumbnail: "/PowerPoint/1-1-social/슬라이드1.png",
+    videoSrc: "/PowerPoint/1-1-social/video.mp4",
+    slides: [
+      { id: 1, title: "슬라이드 1", startTime: 0, thumb: "/PowerPoint/1-1-social/슬라이드1.png" },
+      { id: 2, title: "슬라이드 2", startTime: 2, thumb: "/PowerPoint/1-1-social/슬라이드2.png" },
+      { id: 3, title: "슬라이드 3", startTime: 9, thumb: "/PowerPoint/1-1-social/슬라이드3.png" },
+      { id: 4, title: "슬라이드 4", startTime: 11, thumb: "/PowerPoint/1-1-social/슬라이드4.png" },
+      { id: 5, title: "슬라이드 5", startTime: 14, thumb: "/PowerPoint/1-1-social/슬라이드5.png" },
+      { id: 6, title: "슬라이드 6", startTime: 17, thumb: "/PowerPoint/1-1-social/슬라이드6.png" },
+      { id: 7, title: "슬라이드 7", startTime: 19, thumb: "/PowerPoint/1-1-social/슬라이드7.png" },
+      { id: 8, title: "슬라이드 8", startTime: 21, thumb: "/PowerPoint/1-1-social/슬라이드8.png" },
+      { id: 9, title: "슬라이드 9", startTime: 44, thumb: "/PowerPoint/1-1-social/슬라이드9.png" },
+      { id: 10, title: "슬라이드 10", startTime: 47, thumb: "/PowerPoint/1-1-social/슬라이드10.png" },
+      { id: 11, title: "슬라이드 11", startTime: 50, thumb: "/PowerPoint/1-1-social/슬라이드11.png" },
+      { id: 12, title: "슬라이드 12", startTime: 52, thumb: "/PowerPoint/1-1-social/슬라이드12.png" },
+      { id: 13, title: "슬라이드 13", startTime: 55, thumb: "/PowerPoint/1-1-social/슬라이드13.png" },
+      { id: 14, title: "슬라이드 14", startTime: 57, thumb: "/PowerPoint/1-1-social/슬라이드14.png" },
+      { id: 15, title: "슬라이드 15", startTime: 60, thumb: "/PowerPoint/1-1-social/슬라이드15.png" },
+      { id: 16, title: "슬라이드 16", startTime: 62, thumb: "/PowerPoint/1-1-social/슬라이드16.png" }
+      // { id: 4, title: "슬라이드 17", startTime: 105, thumb: "/PowerPoint/1-1-social/슬라이드17.png" }
+    ]
   }
 ];
 
-export default function RaycasterSection({ onBack }) {
-  const [currentSlide, setCurrentSlide] = useState(0);
+export default function PowerPointSection({ onBack }) {
+  const [selectedPpt, setSelectedPpt] = useState(null);
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
-  const [isSlideShow, setIsSlideShow] = useState(false);
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    if (selectedPpt && videoRef.current) {
+      const targetTime = selectedPpt.slides[activeSlideIndex].startTime;
+      videoRef.current.currentTime = targetTime;
+      videoRef.current.play();
+    }
+  }, [activeSlideIndex, selectedPpt]);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") {
+        if (selectedPpt !== null) {
+          setSelectedPpt(null);
+        } else {
+          handleAnimateBack();
+        }
+      } else if (selectedPpt !== null) {
+        if (e.key === "ArrowRight" || e.key === "PageDown") {
+          setActiveSlideIndex(prev => Math.min(selectedPpt.slides.length - 1, prev + 1));
+        } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+          setActiveSlideIndex(prev => Math.max(0, prev - 1));
+        }
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedPpt]);
 
   const handleAnimateBack = () => {
     setIsExiting(true);
     setTimeout(() => {
       onBack();
-    }, 500);
+    }, 400);
   };
 
-  const nextSlide = () => {
-    if (currentSlide < slides.length - 1) setCurrentSlide(prev => prev + 1);
-  };
-
-  const prevSlide = () => {
-    if (currentSlide > 0) setCurrentSlide(prev => prev - 1);
+  const handleSelectPpt = (ppt) => {
+    setSelectedPpt(ppt);
+    setActiveSlideIndex(0);
   };
 
   return (
     <>
       <style>{`
-        .ppt-panel {
-          position: fixed;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 92vw;
+        .ppt-workspace {
+          width: 94vw;
           height: 90vh;
-          max-width: 1400px;
-          max-height: 900px;
           display: flex;
           flex-direction: column;
           background-color: #f3f3f3;
-          font-family: 'Segoe UI', -apple-system, sans-serif;
-          color: #333333;
+          font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+          color: #333;
+          border-radius: 8px;
+          border: 1px solid #d1d1d1;
+          box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
           overflow: hidden;
-          border-radius: 10px;
-          border: 1px solid #d4d4d4;
-          box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
-          z-index: 100;
+          position: relative;
         }
-
-        .ppt-panel.hidden {
+        .ppt-workspace.hidden {
           opacity: 0;
+          transform: scale(0.95);
           pointer-events: none;
+          transition: opacity 0.4s ease, transform 0.4s ease;
         }
-
-        /* 파워포인트 상단 리본 메뉴 바 */
-        .ppt-top-bar {
-          height: 40px;
-          background-color: #b71c1c;
-          color: white;
+        /* PowerPoint Ribbon Header 스타일 */
+        .ppt-app-header {
+          background-color: #f8f8f8;
+          border-bottom: 1px solid #e1e1e1;
+          display: flex;
+          flex-direction: column;
+          flex-shrink: 0;
+        }
+        .ppt-titlebar {
+          height: 38px;
           display: flex;
           align-items: center;
           justify-content: space-between;
-          padding: 0 16px;
-          font-size: 13px;
-          font-weight: 600;
-          user-select: none;
-          flex-shrink: 0;
+          padding: 0 12px;
+          background-color: #b7472a; /* 파워포인트 주황색 포인트 */
+          color: #fff;
         }
-
-        .ppt-ribbon {
-          height: 75px;
-          background-color: #f8f9fa;
-          border-bottom: 1px solid #dcdcdc;
-          display: flex;
-          align-items: center;
-          padding: 0 20px;
-          gap: 24px;
-          flex-shrink: 0;
-        }
-
-        .ribbon-group {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-          border-right: 1px solid #dcdcdc;
-          padding-right: 20px;
-        }
-
-        .ribbon-title {
+        .ppt-back-btn {
+          background: rgba(255, 255, 255, 0.2);
+          border: 1px solid rgba(255, 255, 255, 0.4);
+          color: #fff;
           font-size: 11px;
-          color: #666;
-          font-weight: 500;
-        }
-
-        .ribbon-btns {
-          display: flex;
-          gap: 8px;
-        }
-
-        .ppt-btn {
-          background: white;
-          border: 1px solid #ccc;
-          padding: 6px 14px;
-          border-radius: 4px;
-          font-size: 12px;
           font-weight: 600;
+          padding: 4px 10px;
+          border-radius: 3px;
           cursor: pointer;
+          transition: background 0.2s;
+        }
+        .ppt-back-btn:hover {
+          background: rgba(255, 255, 255, 0.35);
+        }
+        .ppt-ribbon {
+          height: 46px;
           display: flex;
           align-items: center;
-          gap: 6px;
-          transition: background 0.2s, border-color 0.2s;
+          padding: 0 16px;
+          gap: 20px;
+          background: #fdfdfd;
+          border-bottom: 1px solid #e5e5e5;
+          font-size: 12px;
+          color: #555;
         }
-
-        .ppt-btn:hover {
-          background: #e6f2ff;
-          border-color: #0078d4;
-          color: #0078d4;
+        .ppt-ribbon-tab {
+          font-weight: 600;
+          color: #b7472a;
+          border-bottom: 2px solid #b7472a;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          padding: 0 4px;
         }
-
-        .ppt-btn.primary {
-          background: #107c41;
-          color: white;
-          border: none;
-        }
-        .ppt-btn.primary:hover {
-          background: #0e6b38;
-          color: white;
-        }
-
-        /* 메인 작업 영역 */
         .ppt-body {
           flex: 1;
-          display: flex;
+          background: #e9ecef;
           overflow: hidden;
-          background-color: #e9ecef;
+          position: relative;
         }
-
-        .ppt-thumbnails {
-          width: 220px;
-          background-color: #ffffff;
+        /* PPT 목록 화면 그리드 스타일 */
+        .ppt-list-container {
+          width: 100%;
+          height: 100%;
+          padding: 30px;
+          overflow-y: auto;
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+          gap: 24px;
+          align-content: start;
+        }
+        .ppt-card {
+          background: #ffffff;
+          border: 1px solid #dcdcdc;
+          border-radius: 6px;
+          overflow: hidden;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .ppt-card:hover {
+          border-color: #b7472a;
+          transform: translateY(-3px);
+          box-shadow: 0 8px 20px rgba(183, 71, 42, 0.15);
+        }
+        .ppt-card-thumb {
+          width: 100%;
+          height: 150px;
+          background: #f0f0f0;
+          object-fit: cover;
+          border-bottom: 1px solid #e8e8e8;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #888;
+          font-size: 12px;
+        }
+        .ppt-card-info {
+          padding: 16px;
+        }
+        .ppt-card-title {
+          font-size: 14px;
+          font-weight: bold;
+          color: #222;
+          margin-bottom: 6px;
+        }
+        .ppt-card-date {
+          font-size: 11px;
+          color: #666;
+        }
+        /* 재생 뷰 내부 파워포인트 레이아웃 (좌측 썸네일 사이드바 + 우측 캔버스) */
+        .ppt-editor-layout {
+          display: flex;
+          width: 100%;
+          height: 100%;
+        }
+        .ppt-sidebar {
+          width: 240px;
+          background: #f1f3f5;
           border-right: 1px solid #dcdcdc;
           overflow-y: auto;
           padding: 12px;
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 10px;
           flex-shrink: 0;
         }
-
-        .thumbnail-card {
-          background: #fdfdfd;
+        .sidebar-slide-thumb {
+          background: #fff;
           border: 2px solid #ddd;
           border-radius: 4px;
-          height: 100px;
-          padding: 8px;
+          padding: 6px;
           cursor: pointer;
+          transition: all 0.2s;
+        }
+        .sidebar-slide-thumb:hover {
+          border-color: #b7472a;
+        }
+        .sidebar-slide-thumb.active {
+          border-color: #b7472a;
+          box-shadow: 0 0 0 1px #b7472a;
+          background: #fff5f2;
+        }
+        .sidebar-thumb-screen {
+          width: 100%;
+          height: 110px;
+          background: #222;
+          border-radius: 2px;
+          overflow: hidden;
           display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          font-size: 10px;
-          color: #555;
-          transition: border-color 0.2s, box-shadow 0.2s;
+          align-items: center;
+          justify-content: center;
+          position: relative;
         }
-
-        .thumbnail-card.active {
-          border-color: #b71c1c;
-          box-shadow: 0 0 0 2px rgba(183, 28, 28, 0.2);
+        .sidebar-thumb-screen img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
         }
-
-        .thumbnail-preview-title {
-          font-weight: bold;
-          color: #333;
+        .sidebar-slide-title {
+          font-size: 11px;
+          font-weight: 600;
+          color: #444;
+          margin-top: 6px;
+          white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
         }
-
-        .ppt-canvas-container {
+        /* 우측 메인 비디오 스테이지 */
+        .ppt-stage {
           flex: 1;
+          background: #e2e6ea;
           display: flex;
-          justify-content: center;
+          flex-direction: column;
           align-items: center;
-          padding: 30px;
+          justify-content: center;
           position: relative;
+          padding: 20px;
         }
-
-        .ppt-slide {
+        .ppt-video-wrapper {
+          background: #000;
+          border-radius: 4px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+          overflow: hidden;
+          max-width: 100%;
+          max-height: calc(100% - 50px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .ppt-video-element {
+          max-width: 100%;
+          max-height: 100%;
+          object-fit: contain;
+        }
+        .ppt-footer-bar {
+          height: 40px;
           width: 100%;
-          max-width: 860px;
-          height: 480px;
-          background: white;
-          border-radius: 4px;
-          box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-          padding: 50px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          position: relative;
-          box-sizing: border-box;
-          border: 1px solid #ccc;
-        }
-
-        .slide-header h2 {
-          font-size: 24px;
-          color: #111;
-          margin: 0 0 8px 0;
-        }
-
-        .slide-header h4 {
-          font-size: 14px;
-          color: #b71c1c;
-          margin: 0;
-          font-weight: 600;
-        }
-
-        .slide-body {
-          font-size: 16px;
-          color: #444;
-          line-height: 1.6;
-          white-space: pre-line;
-          flex: 1;
+          background: #f8f9fa;
+          border-top: 1px solid #dcdcdc;
           display: flex;
           align-items: center;
-        }
-
-        .slide-footer {
+          justify-content: space-between;
+          padding: 0 20px;
+          position: absolute;
+          bottom: 0;
           font-size: 12px;
-          color: #888;
-          display: flex;
-          justify-content: space-between;
-          border-top: 1px solid #eee;
-          padding-top: 12px;
+          color: #555;
         }
-
-        .slideshow-overlay {
-          position: absolute;
-          inset: 0;
-          background: #111;
-          z-index: 200;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-          padding: 40px;
-        }
-
-        .slideshow-slide {
-          width: 85vw;
-          height: 80vh;
-          background: white;
-          border-radius: 8px;
-          padding: 60px;
-          display: flex;
-          flex-direction: column;
-          justify-content: space-between;
-          box-sizing: border-box;
-          box-shadow: 0 20px 50px rgba(0,0,0,0.8);
-        }
-
-        .slideshow-controls {
-          position: absolute;
-          bottom: 20px;
-          display: flex;
-          gap: 16px;
-        }
-
-        .slideshow-btn {
-          background: rgba(255,255,255,0.2);
-          color: white;
-          border: none;
-          padding: 8px 16px;
-          border-radius: 4px;
+        .ppt-nav-btn {
+          background: #fff;
+          border: 1px solid #ccc;
+          padding: 4px 10px;
+          border-radius: 3px;
           cursor: pointer;
-          font-weight: bold;
+          font-weight: 600;
+          color: #333;
         }
-        .slideshow-btn:hover {
-          background: rgba(255,255,255,0.4);
+        .ppt-nav-btn:hover:not(:disabled) {
+          background: #f1f1f1;
+          border-color: #b7472a;
+          color: #b7472a;
+        }
+        .ppt-nav-btn:disabled {
+          opacity: 0.4;
+          cursor: not-allowed;
         }
       `}</style>
 
-      <motion.div 
-        initial={{ opacity: 0 }} 
-        animate={{ opacity: 1 }} 
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.25 }}
-        className={`ppt-panel ${isExiting ? "hidden" : ""}`}
-      >
-        <div className="ppt-top-bar">
-          <span>📊 PowerPoint - Project_Presentation_Archive.pptx</span>
-          <button 
-            onClick={handleAnimateBack} 
-            style={{ background: 'transparent', border: 'none', color: 'white', fontWeight: 'bold', cursor: 'pointer', fontSize: '14px' }}
-          >
-            ✕ 닫기
-          </button>
-        </div>
-
-        <div className="ppt-ribbon">
-          <div className="ribbon-group">
-            <span className="ribbon-title">슬라이드 쇼</span>
-            <div className="ribbon-btns">
-              <button className="ppt-btn primary" onClick={() => setIsSlideShow(true)}>
-                ▶ 처음부터 슬라이드 쇼
+      <div className={`sub-panel ppt-workspace ${isExiting ? "hidden" : ""}`}>
+        {/* 파워포인트 앱 스타일 상단 타이틀 및 리본 메뉴 */}
+        <header className="ppt-app-header">
+          <div className="ppt-titlebar">
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <button className="ppt-back-btn" onClick={() => {
+                if (selectedPpt !== null) setSelectedPpt(null);
+                else handleAnimateBack();
+              }}>
+                ◀ {selectedPpt !== null ? "All Presentations" : "나가기"}
               </button>
+              <span style={{ fontSize: "13px", fontWeight: 700, letterSpacing: "0.5px" }}>
+                {selectedPpt ? `${selectedPpt.title} - PowerPoint Viewer` : "Microsoft PowerPoint - PPT 프레젠테이션"}
+              </span>
             </div>
+            <span style={{ fontSize: "11px", opacity: 0.8 }}>Archive</span>
           </div>
 
-          <div className="ribbon-group">
-            <span className="ribbon-title">페이지 탐색</span>
-            <div className="ribbon-btns">
-              <button className="ppt-btn" onClick={prevSlide} disabled={currentSlide === 0}>◀ 이전</button>
-              <button className="ppt-btn" onClick={nextSlide} disabled={currentSlide === slides.length - 1}>다음 ▶</button>
+          <div className="ppt-ribbon">
+            <div className="ppt-ribbon-tab">홈</div>
+            <div>삽입</div>
+            <div>디자인</div>
+            <div>전환</div>
+            <div>슬라이드 쇼</div>
+            <div style={{ marginLeft: "auto", color: "#888", fontSize: "11px" }}>
+              {selectedPpt ? `현재 슬라이드: ${activeSlideIndex + 1} / ${selectedPpt.slides.length}` : `${presentations.length}개의 프로젝트 파일`}
             </div>
           </div>
+        </header>
 
-          <div className="ribbon-group" style={{ border: 'none' }}>
-            <span className="ribbon-title">시스템</span>
-            <div className="ribbon-btns">
-              <button className="ppt-btn" onClick={handleAnimateBack} style={{ color: '#b71c1c', borderColor: '#b71c1c' }}>
-                메인으로 나가기
-              </button>
-            </div>
-          </div>
-        </div>
-
+        {/* 본문 영역 */}
         <div className="ppt-body">
-          <div className="ppt-thumbnails">
-            {slides.map((slide, idx) => (
-              <div 
-                key={slide.id}
-                className={`thumbnail-card ${currentSlide === idx ? "active" : ""}`}
-                onClick={() => setCurrentSlide(idx)}
+          <AnimatePresence mode="wait">
+            {selectedPpt === null && (
+              <motion.div 
+                key="ppt-list"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="ppt-list-container"
               >
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ fontWeight: 'bold' }}>{idx + 1}</span>
-                  <span>PPT</span>
-                </div>
-                <div className="thumbnail-preview-title">{slide.title}</div>
-              </div>
-            ))}
-          </div>
+                {presentations.map((ppt) => (
+                  <div key={ppt.id} className="ppt-card" onClick={() => handleSelectPpt(ppt)}>
+                    <div className="ppt-card-thumb">
+                      {ppt.thumbnail ? (
+                        <img src={ppt.thumbnail} alt={ppt.title} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      ) : (
+                        <span>PPT 썸네일</span>
+                      )}
+                    </div>
+                    <div className="ppt-card-info">
+                      <div className="ppt-card-title">{ppt.title}</div>
+                      <div className="ppt-card-date">제작일: {ppt.date} | 슬라이드 수: {ppt.slides.length}장</div>
+                    </div>
+                  </div>
+                ))}
+              </motion.div>
+            )}
 
-          <div className="ppt-canvas-container">
-            <div className="ppt-slide">
-              <div className="slide-header">
-                <h2>{slides[currentSlide].title}</h2>
-                <h4>{slides[currentSlide].subtitle}</h4>
-              </div>
-              <div className="slide-body">
-                {slides[currentSlide].content}
-              </div>
-              <div className="slide-footer">
-                <span>Presentation Archive</span>
-                <span>{currentSlide + 1} / {slides.length}</span>
-              </div>
-            </div>
-          </div>
+            {selectedPpt !== null && (
+              <motion.div 
+                key="editor-view"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="ppt-editor-layout"
+              >
+                {/* 왼쪽 슬라이드 썸네일 탐색기 사이드바 */}
+                <div className="ppt-sidebar">
+                  <div style={{ fontSize: "11px", fontWeight: "bold", color: "#666", marginBottom: "4px" }}>슬라이드 목차</div>
+                  {selectedPpt.slides.map((slide, idx) => (
+                    <div 
+                      key={slide.id} 
+                      className={`sidebar-slide-thumb ${activeSlideIndex === idx ? "active" : ""}`}
+                      onClick={() => setActiveSlideIndex(idx)}
+                    >
+                      <div className="sidebar-thumb-screen">
+                        {slide.thumb ? (
+                          <img src={slide.thumb} alt={slide.title} />
+                        ) : (
+                          <span style={{ color: "#888", fontSize: "10px" }}>Slide {idx + 1}</span>
+                        )}
+                        <span style={{ position: "absolute", top: "2px", left: "4px", fontSize: "9px", background: "rgba(0,0,0,0.6)", color: "#fff", padding: "1px 3px", borderRadius: "2px" }}>
+                          {idx + 1}
+                        </span>
+                      </div>
+                      <div className="sidebar-slide-title" title={slide.title}>{slide.title}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 우측 비디오 재생 스테이지 */}
+                <div className="ppt-stage">
+                  <div className="ppt-video-wrapper">
+                    <video 
+                      key={selectedPpt.id}
+                      ref={videoRef}
+                      src={selectedPpt.videoSrc}
+                      className="ppt-video-element"
+                      controls
+                      autoPlay
+                    />
+                  </div>
+
+                  <footer className="ppt-footer-bar">
+                    <button 
+                      className="ppt-nav-btn" 
+                      onClick={() => setActiveSlideIndex(prev => Math.max(0, prev - 1))}
+                      disabled={activeSlideIndex === 0}
+                    >
+                      ◀ 이전 슬라이드
+                    </button>
+
+                    <span style={{ fontWeight: "600", color: "#333" }}>
+                      {activeSlideIndex + 1}. {selectedPpt.slides[activeSlideIndex].title}
+                    </span>
+
+                    <button 
+                      className="ppt-nav-btn" 
+                      onClick={() => setActiveSlideIndex(prev => Math.min(selectedPpt.slides.length - 1, prev + 1))}
+                      disabled={activeSlideIndex === selectedPpt.slides.length - 1}
+                    >
+                      다음 슬라이드 ▶
+                    </button>
+                  </footer>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-
-        <AnimatePresence>
-          {isSlideShow && (
-            <motion.div 
-              initial={{ opacity: 0 }} 
-              animate={{ opacity: 1 }} 
-              exit={{ opacity: 0 }}
-              className="slideshow-overlay"
-            >
-              <div className="slideshow-slide">
-                <div className="slide-header">
-                  <h2 style={{ fontSize: '32px' }}>{slides[currentSlide].title}</h2>
-                  <h4 style={{ fontSize: '18px', color: '#b71c1c' }}>{slides[currentSlide].subtitle}</h4>
-                </div>
-                <div className="slide-body" style={{ fontSize: '22px' }}>
-                  {slides[currentSlide].content}
-                </div>
-                <div className="slide-footer" style={{ fontSize: '16px' }}>
-                  <span>PowerPoint Fullscreen Slide Show</span>
-                  <span>{currentSlide + 1} / {slides.length}</span>
-                </div>
-              </div>
-
-              <div className="slideshow-controls">
-                <button className="slideshow-btn" onClick={prevSlide} disabled={currentSlide === 0}>◀ 이전</button>
-                <button className="slideshow-btn" onClick={() => setIsSlideShow(false)}>✕ 슬라이드 쇼 종료 (ESC)</button>
-                <button className="slideshow-btn" onClick={nextSlide} disabled={currentSlide === slides.length - 1}>다음 ▶</button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
+      </div>
     </>
   );
 }

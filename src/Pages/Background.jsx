@@ -4,6 +4,8 @@ import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from
 import WebSection from './WebSection';
 import PowerPointSection from './PowerPointSection';
 import MusicSection from './MusicSection';
+import BlueArchiveCursor from './Cursor';
+import MusicPlayer from './MusicPlayer';
 
 const theme = {
   bgBase: '#f0f9ff',
@@ -18,50 +20,18 @@ const theme = {
   fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
 };
 
-const styles = {
-  global: {
-    width: '100vw',
-    height: '100vh',
-    margin: 0,
-    padding: 0,
-    top: 0,
-    left: 0,
-    background: `linear-gradient(135deg, ${theme.bgGradStart} 0%, ${theme.bgBase} 50%, ${theme.bgGradEnd} 100%)`,
-    overflow: 'hidden',
-    fontFamily: theme.fontFamily,
-    position: 'fixed', // absolute 대신 fixed를 사용하여 뷰포트 기준 절대 고정
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    perspective: '2000px',
-  },
-  lightLeak: {
-    position: 'absolute',
-    top: '-20%',
-    right: '-10%',
-    width: '600px',
-    height: '600px',
-    background: `radial-gradient(circle, rgba(125, 211, 252, 0.4) 0%, transparent 70%)`,
-    filter: 'blur(80px)',
-    pointerEvents: 'none',
-    zIndex: 0,
-  },
-  dotPattern: {
-    position: 'absolute',
-    inset: 0,
-    backgroundImage: 'radial-gradient(rgba(12, 74, 110, 0.05) 1px, transparent 0)',
-    backgroundSize: '24px 24px',
-    pointerEvents: 'none',
-    zIndex: 1,
-    opacity: 0.6,
-  },
-};
+// 💡 사용할 블루 아카이브 월페이퍼 이미지 경로
+const WALLPAPER_URL = '/image/background.png';
 
 export default function MainStudio() {
   const [activeApp, setActiveApp] = useState(null);
   const [isBooted, setIsBooted] = useState(false);
   const [lockedNotice, setLockedNotice] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [wallpaperOn, setWallpaperOn] = useState(true); // 💡 월페이퍼 토글 상태
+
+  // 💡 음악 재생 및 FL 스튜디오 진입 시 음소거 연동을 위한 상태
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // 화면 크기 변경 감지
   useEffect(() => {
@@ -80,8 +50,12 @@ export default function MainStudio() {
   const motionRotateX = useTransform(cursorY, [-0.5, 0.5], ["1.5deg", "-1.5deg"]);
   const motionRotateY = useTransform(cursorX, [-0.5, 0.5], ["-1.5deg", "1.5deg"]);
 
+  // 💡 패럴랙스 깊이감 오프셋
+  const bgX = useTransform(cursorX, [-0.5, 0.5], ["-15px", "15px"]);
+  const bgY = useTransform(cursorY, [-0.5, 0.5], ["-15px", "15px"]);
+
   const handleMouseMove = (e) => {
-    if (isMobile) return; // 모바일에서는 3D틸트 효과 비활성화로 성능 보호
+    if (isMobile) return;
     const { innerWidth, innerHeight } = window;
     mouseX.set((e.clientX / innerWidth) - 0.5);
     mouseY.set((e.clientY / innerHeight) - 0.5);
@@ -105,10 +79,10 @@ export default function MainStudio() {
     ppt: {
       title: 'PPT // DESIGN',
       subtitle: 'VBA 및 학교 세특 발표 PPT',
-      tag: '02. CREATIVE CODING',
-      symbol: '3D',
+      tag: '02. POWERPOINT DESIGN',
+      symbol: <i className="fa-regular fa-file-powerpoint"></i>,
       color: '#0369a1',
-      isLocked: true,
+      isLocked: false,
       component: <PowerPointSection onBack={() => setActiveApp(null)} />
     },
     fl: {
@@ -132,13 +106,81 @@ export default function MainStudio() {
   };
 
   const socials = [
-    { name: <i className="fa-brands fa-x-twitter"></i>, url: 'https://x.com/hoo091221', color: '#0284c7' },
+    { name: <i className="fa-brands fa-x-twitter"></i>, url: 'https://x.com/hoo091221', color: '#333' },
     { name: <i className="fa-brands fa-instagram"></i>, url: 'https://www.instagram.com/hoo_091221', color: '#db2777' },
     { name: <i className="fa-brands fa-discord"></i>, url: 'https://discord.com/channels/@me/1111901206030336031', color: '#4f46e5' },
   ];
 
+  // 💡 월페이퍼 켜짐 여부에 따라 배경 스타일 동적 전환
+  const dynamicBackground = wallpaperOn
+    ? `linear-gradient(rgba(12, 74, 110, 0.75), rgba(12, 74, 110, 0.75)), url('${WALLPAPER_URL}') center/cover no-repeat`
+    : `linear-gradient(135deg, ${theme.bgGradStart} 0%, ${theme.bgBase} 50%, ${theme.bgGradEnd} 100%)`;
+
+  const styles = {
+    global: {
+      width: '100vw',
+      height: '100vh',
+      margin: 0,
+      padding: 0,
+      top: 0,
+      left: 0,
+      overflow: 'hidden',
+      fontFamily: theme.fontFamily,
+      position: 'fixed',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      perspective: '2000px',
+    },
+    lightLeak: {
+      position: 'absolute',
+      top: '-20%',
+      right: '-10%',
+      width: '600px',
+      height: '600px',
+      background: `radial-gradient(circle, rgba(125, 211, 252, 0.4) 0%, transparent 70%)`,
+      filter: 'blur(80px)',
+      pointerEvents: 'none',
+      zIndex: 2,
+    },
+    dotPattern: {
+      position: 'absolute',
+      inset: 0,
+      backgroundImage: 'radial-gradient(rgba(12, 74, 110, 0.05) 1px, transparent 0)',
+      backgroundSize: '24px 24px',
+      pointerEvents: 'none',
+      zIndex: 3,
+      opacity: wallpaperOn ? 0.2 : 0.6,
+    },
+  };
+
   return (
     <div onMouseMove={handleMouseMove} style={styles.global}>
+      {/* 💡 블루 아카이브 감성 커서 장착 */}
+      <BlueArchiveCursor isMobile={isMobile} />
+
+      {/* 💡 FL Studio(activeApp === 'fl') 진입 시 자동 음소거 연동 플레이어 */}
+      <MusicPlayer 
+        isPlaying={isPlaying} 
+        setIsPlaying={setIsPlaying} 
+        shouldMute={activeApp === 'fl'} 
+      />
+
+      {/* 💡 패럴랙스 카메라 무빙이 적용된 배경 레이어 */}
+      <motion.div
+        style={{
+          position: 'absolute',
+          inset: '-30px',
+          x: bgX,
+          y: bgY,
+          zIndex: 0,
+          background: dynamicBackground,
+          transition: 'background 0.5s ease',
+        }}
+        animate={wallpaperOn ? { scale: [1, 1.03, 1] } : { scale: 1 }}
+        transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+      />
+
       <div style={styles.lightLeak} />
       <div style={styles.dotPattern} />
 
@@ -159,7 +201,7 @@ export default function MainStudio() {
             <motion.div
               initial={{ opacity: 1, scale: 0.95, filter: 'blur(6px)' }}
               exit={{ opacity: 0, scale: 1.05, filter: 'blur(0px)', transition: { duration: 0.3 } }}
-              style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+              style={{ position: 'absolute', inset: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 101 }}
             >
               <div style={{ color: '#0284c7', fontSize: '1.2rem', letterSpacing: '14px', fontWeight: 600 }}>
                 LOADING // ARCHIVE
@@ -169,26 +211,26 @@ export default function MainStudio() {
         )}
       </AnimatePresence>
 
-      {/* 상단 타이틀 영역 (반응형 위치 조정) */}
+      {/* 상단 타이틀 영역 */}
       {!activeApp && (
         <motion.div
-        initial={{ opacity: 0, y: -20, filter: 'blur(8px)' }}
-        animate={isBooted ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
-        transition={{ duration: 0.8, delay: 0.4 }}
-        style={{
-          position: 'absolute',
-          top: '24px',
-          left: '28px',
-          zIndex: 10,
-          pointerEvents: 'none',
-        }}
+          initial={{ opacity: 0, y: -20, filter: 'blur(8px)' }}
+          animate={isBooted ? { opacity: 1, y: 0, filter: 'blur(0px)' } : {}}
+          transition={{ duration: 0.8, delay: 0.4 }}
+          style={{
+            position: 'absolute',
+            top: '24px',
+            left: '28px',
+            zIndex: 10,
+            pointerEvents: 'none',
+          }}
         >
-          <h1 style={{ color: theme.textPrimary, fontSize: isMobile ? '1.1rem' : '1.4rem', margin: 0, fontWeight: 700, letterSpacing: '4px' }}>ARCHIVE</h1>
-          <p style={{ color: theme.textSecondary, marginTop: '4px', fontSize: isMobile ? '0.7rem' : '0.8rem', letterSpacing: '2px', fontWeight: 500 }}>PROJECT PORTFOLIO</p>
+          <h1 style={{ color: wallpaperOn ? '#ffffff' : theme.textPrimary, fontSize: isMobile ? '1.1rem' : '1.4rem', margin: 0, fontWeight: 700, letterSpacing: '4px', textShadow: wallpaperOn ? '0 2px 10px rgba(0,0,0,0.5)' : 'none' }}>PROJECT PORTPOLIO</h1>
+          <p style={{ color: wallpaperOn ? '#bae6fd' : theme.textSecondary, marginTop: '4px', fontSize: isMobile ? '0.7rem' : '0.8rem', letterSpacing: '2px', fontWeight: 500 }}>hoo091221's Archive</p>
         </motion.div>
       )}
 
-      {/* 소셜 링크 영역 */}
+      {/* 우측 상단 소셜 링크 및 월페이퍼 토글 영역 */}
       {!activeApp && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -199,7 +241,8 @@ export default function MainStudio() {
             top: isMobile ? '4vh' : '8vh',
             right: isMobile ? '6vw' : '5vw',
             display: 'flex',
-            gap: '1rem',
+            alignItems: 'center',
+            gap: '1.2rem',
             zIndex: 10,
           }}
         >
@@ -211,16 +254,41 @@ export default function MainStudio() {
               rel="noopener noreferrer"
               whileHover={{ scale: 1.08, y: -2 }}
               style={{
-                color: theme.textSecondary, fontSize: isMobile ? '0.75rem' : '0.8rem', letterSpacing: '1px',
-                textDecoration: 'none', fontWeight: 600,
+                color: wallpaperOn ? '#e0f2fe' : theme.textSecondary,
+                fontSize: isMobile ? '0.75rem' : '0.8rem',
+                letterSpacing: '1px',
+                textDecoration: 'none',
+                fontWeight: 600,
                 transition: 'color 0.2s',
+                textShadow: wallpaperOn ? '0 2px 6px rgba(0,0,0,0.5)' : 'none',
               }}
               onMouseEnter={(e) => e.currentTarget.style.color = soc.color}
-              onMouseLeave={(e) => e.currentTarget.style.color = theme.textSecondary}
+              onMouseLeave={(e) => e.currentTarget.style.color = wallpaperOn ? '#e0f2fe' : theme.textSecondary}
             >
               {soc.name}
             </motion.a>
           ))}
+
+          {/* 💡 월페이퍼 ON/OFF 토글 버튼 */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setWallpaperOn(!wallpaperOn)}
+            style={{
+              backgroundColor: wallpaperOn ? 'rgba(255, 255, 255, 0.2)' : 'rgba(2, 132, 199, 0.1)',
+              border: `1px solid ${wallpaperOn ? 'rgba(255, 255, 255, 0.4)' : theme.cardBorder}`,
+              color: wallpaperOn ? '#ffffff' : theme.textPrimary,
+              padding: '6px 12px',
+              borderRadius: '20px',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              cursor: 'pointer',
+              backdropFilter: 'blur(10px)',
+              letterSpacing: '1px',
+            }}
+          >
+            Wallpaper: {wallpaperOn ? 'ON 🌸' : 'OFF ☀️'}
+          </motion.button>
         </motion.div>
       )}
 
@@ -250,7 +318,7 @@ export default function MainStudio() {
         )}
       </AnimatePresence>
 
-      {/* 메인 선택 카드 리스트 (모바일 대응 Flex Column 전환 및 스크롤 허용) */}
+      {/* 메인 선택 카드 리스트 */}
       {!activeApp && (
         <motion.div
           style={{
@@ -259,7 +327,7 @@ export default function MainStudio() {
             gap: isMobile ? '1rem' : '2.5rem',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 3,
+            zIndex: 10,
             rotateX: isMobile ? 0 : motionRotateX,
             rotateY: isMobile ? 0 : motionRotateY,
             transformStyle: 'preserve-3d',
@@ -289,7 +357,7 @@ export default function MainStudio() {
                 border: `1px solid ${theme.cardBorder}`,
                 cursor: app.isLocked ? 'not-allowed' : 'pointer',
                 overflow: 'hidden',
-                boxShadow: '0 15px 35px rgba(12, 74, 110, 0.08), inset 0 1px 0 rgba(255,255,255,1)',
+                boxShadow: wallpaperOn ? '0 20px 40px rgba(0, 0, 0, 0.3)' : '0 15px 35px rgba(12, 74, 110, 0.08), inset 0 1px 0 rgba(255,255,255,1)',
                 backdropFilter: 'blur(20px)',
                 padding: isMobile ? '1.2rem 1.5rem' : '2.5rem',
                 display: 'flex',
