@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-const AUDIO_SRC = './src/sounds/background.mp3';
+const AUDIO_SRC = 'background.mp3';
 
 export default function MusicPlayer({ isPlaying, setIsPlaying, shouldMute }) {
   const audioRef = useRef(null);
