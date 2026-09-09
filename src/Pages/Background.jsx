@@ -152,15 +152,14 @@ export default function MainStudio() {
     <div onMouseMove={handleMouseMove} style={styles.global}>
       <BlueArchiveCursor isMobile={isMobile} />
 
-      {/* 하단 홈버튼 및 인디케이터 영역에 가려지지 않도록 안전 영역 패딩 적용 컨테이너 */}
+      {/* 💡 모바일 홈 인디케이터에 가리지 않도록 반응형으로 위치 제어되는 음악 플레이어 래퍼 */}
       <div style={{
-        position: 'absolute',
-        bottom: 'calc(16px + env(safe-area-inset-bottom))',
-        left: '16px',
-        right: '16px',
-        display: 'flex',
-        justifyContent: 'center',
-        zIndex: 15,
+        position: 'fixed',
+        bottom: isMobile ? 'calc(16px + env(safe-area-inset-bottom))' : '24px',
+        right: isMobile ? 'auto' : '28px',
+        left: isMobile ? '50%' : 'auto',
+        transform: isMobile ? 'translateX(-50%)' : 'none',
+        zIndex: 100,
         pointerEvents: 'none',
       }}>
         <div style={{ pointerEvents: 'auto' }}>
@@ -228,7 +227,6 @@ export default function MainStudio() {
         )}
       </AnimatePresence>
 
-      {/* 모바일 화면에서는 상단 타이틀과 소셜 버튼이 겹치지 않도록 세로로 유연하게 배치 */}
       {!activeApp && (
         <motion.div
           initial={{ opacity: 0, y: -20, filter: 'blur(8px)' }}
@@ -253,7 +251,6 @@ export default function MainStudio() {
             <p style={{ color: wallpaperOn ? '#bae6fd' : theme.textSecondary, marginTop: '2px', fontSize: isMobile ? '0.65rem' : '0.8rem', letterSpacing: '2px', fontWeight: 500 }}>hoo091221's Archive</p>
           </div>
 
-          {/* 모바일 환경일 때 타이틀 바로 아래에 소셜 및 월페이퍼 버튼이 안전하게 배치되도록 통합 */}
           {isMobile && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', pointerEvents: 'auto', flexWrap: 'wrap' }}>
               {socials.map((soc, idx) => (
@@ -294,7 +291,6 @@ export default function MainStudio() {
         </motion.div>
       )}
 
-      {/* PC 환경용 우측 상단 소셜 링크 및 월페이퍼 토글 */}
       {!activeApp && !isMobile && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}

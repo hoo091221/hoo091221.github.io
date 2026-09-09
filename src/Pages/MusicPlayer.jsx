@@ -89,10 +89,7 @@ export default function MusicPlayer({ isPlaying, setIsPlaying, shouldMute }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.6 }}
       style={{
-        position: 'fixed',
-        bottom: '24px',
-        right: '28px',
-        zIndex: 100,
+        // 💡 내부 고정 위치(fixed, bottom, right)를 제거하고 외부 래퍼가 위치를 제어하도록 변경
         display: 'flex',
         alignItems: 'center',
         gap: '12px',
