@@ -20,7 +20,6 @@ const theme = {
   fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
 };
 
-// 💡 사용할 블루 아카이브 월페이퍼 이미지 경로
 const WALLPAPER_URL = 'https://dszw1qtcnsa5e.cloudfront.net/community/20250715/339ef1d0-8b3d-470f-bb07-ff3080360d90/image.png';
 
 export default function MainStudio() {
@@ -28,12 +27,9 @@ export default function MainStudio() {
   const [isBooted, setIsBooted] = useState(false);
   const [lockedNotice, setLockedNotice] = useState(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  const [wallpaperOn, setWallpaperOn] = useState(true); // 💡 월페이퍼 토글 상태
-
-  // 💡 음악 재생 및 FL 스튜디오 진입 시 음소거 연동을 위한 상태
+  const [wallpaperOn, setWallpaperOn] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // 화면 크기 변경 감지
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 768);
     window.addEventListener('resize', handleResize);
@@ -50,7 +46,6 @@ export default function MainStudio() {
   const motionRotateX = useTransform(cursorY, [-0.5, 0.5], ["1.5deg", "-1.5deg"]);
   const motionRotateY = useTransform(cursorX, [-0.5, 0.5], ["-1.5deg", "1.5deg"]);
 
-  // 💡 패럴랙스 깊이감 오프셋
   const bgX = useTransform(cursorX, [-0.5, 0.5], ["-15px", "15px"]);
   const bgY = useTransform(cursorY, [-0.5, 0.5], ["-15px", "15px"]);
 
@@ -111,7 +106,6 @@ export default function MainStudio() {
     { name: <i className="fa-brands fa-discord"></i>, url: 'https://discord.com/channels/@me/1111901206030336031', color: '#4f46e5' },
   ];
 
-  // 💡 월페이퍼 켜짐 여부에 따라 배경 스타일 동적 전환
   const dynamicBackground = wallpaperOn
     ? `linear-gradient(rgba(12, 74, 110, 0.75), rgba(12, 74, 110, 0.75)), url('${WALLPAPER_URL}') center/cover no-repeat`
     : `linear-gradient(135deg, ${theme.bgGradStart} 0%, ${theme.bgBase} 50%, ${theme.bgGradEnd} 100%)`;
@@ -156,17 +150,28 @@ export default function MainStudio() {
 
   return (
     <div onMouseMove={handleMouseMove} style={styles.global}>
-      {/* 💡 블루 아카이브 감성 커서 장착 */}
       <BlueArchiveCursor isMobile={isMobile} />
 
-      {/* 💡 FL Studio(activeApp === 'fl') 진입 시 자동 음소거 및 페이드 연동 플레이어 */}
-      <MusicPlayer 
-        isPlaying={isPlaying} 
-        setIsPlaying={setIsPlaying} 
-        shouldMute={activeApp === 'fl'} 
-      />
+      {/* 하단 홈버튼 및 인디케이터 영역에 가려지지 않도록 안전 영역 패딩 적용 컨테이너 */}
+      <div style={{
+        position: 'absolute',
+        bottom: 'calc(16px + env(safe-area-inset-bottom))',
+        left: '16px',
+        right: '16px',
+        display: 'flex',
+        justifyContent: 'center',
+        zIndex: 15,
+        pointerEvents: 'none',
+      }}>
+        <div style={{ pointerEvents: 'auto' }}>
+          <MusicPlayer 
+            isPlaying={isPlaying} 
+            setIsPlaying={setIsPlaying} 
+            shouldMute={activeApp === 'fl'} 
+          />
+        </div>
+      </div>
 
-      {/* 💡 패럴랙스 카메라 무빙이 적용된 배경 레이어 */}
       <motion.div
         style={{
           position: 'absolute',
@@ -184,7 +189,6 @@ export default function MainStudio() {
       <div style={styles.lightLeak} />
       <div style={styles.dotPattern} />
 
-      {/* 부팅 인트로 (양옆으로 열리는 반투명 블러 커튼 효과) */}
       <AnimatePresence>
         {!isBooted && (
           <div style={{ position: 'absolute', inset: 0, zIndex: 100, display: 'flex', pointerEvents: 'none' }}>
@@ -224,7 +228,7 @@ export default function MainStudio() {
         )}
       </AnimatePresence>
 
-      {/* 상단 타이틀 영역 */}
+      {/* 모바일 화면에서는 상단 타이틀과 소셜 버튼이 겹치지 않도록 세로로 유연하게 배치 */}
       {!activeApp && (
         <motion.div
           initial={{ opacity: 0, y: -20, filter: 'blur(8px)' }}
@@ -232,27 +236,74 @@ export default function MainStudio() {
           transition={{ duration: 0.8, delay: 0.4 }}
           style={{
             position: 'absolute',
-            top: '24px',
-            left: '28px',
+            top: isMobile ? '20px' : '24px',
+            left: isMobile ? '20px' : '28px',
+            right: isMobile ? '20px' : 'auto',
             zIndex: 10,
+            display: 'flex',
+            flexDirection: isMobile ? 'column' : 'row',
+            justifyContent: 'space-between',
+            alignItems: isMobile ? 'flex-start' : 'center',
+            gap: isMobile ? '12px' : '0',
             pointerEvents: 'none',
           }}
         >
-          <h1 style={{ color: wallpaperOn ? '#ffffff' : theme.textPrimary, fontSize: isMobile ? '1.1rem' : '1.4rem', margin: 0, fontWeight: 700, letterSpacing: '4px', textShadow: wallpaperOn ? '0 2px 10px rgba(0,0,0,0.5)' : 'none' }}>PROJECT PORTPOLIO</h1>
-          <p style={{ color: wallpaperOn ? '#bae6fd' : theme.textSecondary, marginTop: '4px', fontSize: isMobile ? '0.7rem' : '0.8rem', letterSpacing: '2px', fontWeight: 500 }}>hoo091221's Archive</p>
+          <div>
+            <h1 style={{ color: wallpaperOn ? '#ffffff' : theme.textPrimary, fontSize: isMobile ? '1rem' : '1.4rem', margin: 0, fontWeight: 700, letterSpacing: '3px', textShadow: wallpaperOn ? '0 2px 10px rgba(0,0,0,0.5)' : 'none' }}>PROJECT PORTPOLIO</h1>
+            <p style={{ color: wallpaperOn ? '#bae6fd' : theme.textSecondary, marginTop: '2px', fontSize: isMobile ? '0.65rem' : '0.8rem', letterSpacing: '2px', fontWeight: 500 }}>hoo091221's Archive</p>
+          </div>
+
+          {/* 모바일 환경일 때 타이틀 바로 아래에 소셜 및 월페이퍼 버튼이 안전하게 배치되도록 통합 */}
+          {isMobile && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', pointerEvents: 'auto', flexWrap: 'wrap' }}>
+              {socials.map((soc, idx) => (
+                <motion.a
+                  key={idx}
+                  href={soc.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: wallpaperOn ? '#e0f2fe' : theme.textSecondary,
+                    fontSize: '0.85rem',
+                    textDecoration: 'none',
+                    fontWeight: 600,
+                    textShadow: wallpaperOn ? '0 2px 6px rgba(0,0,0,0.5)' : 'none',
+                  }}
+                >
+                  {soc.name}
+                </motion.a>
+              ))}
+              <motion.button
+                onClick={() => setWallpaperOn(!wallpaperOn)}
+                style={{
+                  backgroundColor: wallpaperOn ? 'rgba(255, 255, 255, 0.2)' : 'rgba(2, 132, 199, 0.1)',
+                  border: `1px solid ${wallpaperOn ? 'rgba(255, 255, 255, 0.4)' : theme.cardBorder}`,
+                  color: wallpaperOn ? '#ffffff' : theme.textPrimary,
+                  padding: '4px 10px',
+                  borderRadius: '16px',
+                  fontSize: '0.7rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  backdropFilter: 'blur(10px)',
+                }}
+              >
+                Wallpaper: {wallpaperOn ? 'ON 🌸' : 'OFF ☀️'}
+              </motion.button>
+            </div>
+          )}
         </motion.div>
       )}
 
-      {/* 우측 상단 소셜 링크 및 월페이퍼 토글 영역 */}
-      {!activeApp && (
+      {/* PC 환경용 우측 상단 소셜 링크 및 월페이퍼 토글 */}
+      {!activeApp && !isMobile && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={isBooted ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.8, delay: 0.5 }}
           style={{
             position: 'absolute',
-            top: isMobile ? '4vh' : '8vh',
-            right: isMobile ? '6vw' : '5vw',
+            top: '8vh',
+            right: '5vw',
             display: 'flex',
             alignItems: 'center',
             gap: '1.2rem',
@@ -268,7 +319,7 @@ export default function MainStudio() {
               whileHover={{ scale: 1.08, y: -2 }}
               style={{
                 color: wallpaperOn ? '#e0f2fe' : theme.textSecondary,
-                fontSize: isMobile ? '0.75rem' : '0.8rem',
+                fontSize: '0.8rem',
                 letterSpacing: '1px',
                 textDecoration: 'none',
                 fontWeight: 600,
@@ -282,7 +333,6 @@ export default function MainStudio() {
             </motion.a>
           ))}
 
-          {/* 💡 월페이퍼 ON/OFF 토글 버튼 */}
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
@@ -305,7 +355,6 @@ export default function MainStudio() {
         </motion.div>
       )}
 
-      {/* 잠금 안내 알림 토스트 */}
       <AnimatePresence>
         {lockedNotice && (
           <motion.div
@@ -331,22 +380,22 @@ export default function MainStudio() {
         )}
       </AnimatePresence>
 
-      {/* 메인 선택 카드 리스트 */}
       {!activeApp && (
         <motion.div
           style={{
             display: 'flex',
             flexDirection: isMobile ? 'column' : 'row',
-            gap: isMobile ? '1rem' : '2.5rem',
+            gap: isMobile ? '0.8rem' : '2.5rem',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 10,
             rotateX: isMobile ? 0 : motionRotateX,
             rotateY: isMobile ? 0 : motionRotateY,
             transformStyle: 'preserve-3d',
-            maxHeight: isMobile ? '80vh' : 'none',
+            maxHeight: isMobile ? '70vh' : 'none',
             overflowY: isMobile ? 'auto' : 'visible',
-            padding: isMobile ? '80px 20px 20px 20px' : '0',
+            padding: isMobile ? '100px 20px 80px 20px' : '0',
+            width: '100%',
           }}
           initial={{ opacity: 0, scale: 0.92, y: 30, filter: 'blur(10px)' }}
           animate={isBooted ? { opacity: 1, scale: 1, y: 0, filter: 'blur(0px)' } : {}}
@@ -362,17 +411,17 @@ export default function MainStudio() {
               whileTap={{ scale: 0.98 }}
               onClick={() => handleCardClick(key, app)}
               style={{
-                width: isMobile ? '85vw' : '280px',
+                width: isMobile ? '90vw' : '280px',
                 maxWidth: '320px',
-                height: isMobile ? '150px' : '380px',
+                height: isMobile ? '110px' : '380px',
                 backgroundColor: app.isLocked ? 'rgba(255, 255, 255, 0.65)' : theme.cardBg,
-                borderRadius: '20px',
+                borderRadius: '16px',
                 border: `1px solid ${theme.cardBorder}`,
                 cursor: app.isLocked ? 'not-allowed' : 'pointer',
                 overflow: 'hidden',
                 boxShadow: wallpaperOn ? '0 20px 40px rgba(0, 0, 0, 0.3)' : '0 15px 35px rgba(12, 74, 110, 0.08), inset 0 1px 0 rgba(255,255,255,1)',
                 backdropFilter: 'blur(20px)',
-                padding: isMobile ? '1.2rem 1.5rem' : '2.5rem',
+                padding: isMobile ? '1rem 1.2rem' : '2.5rem',
                 display: 'flex',
                 flexDirection: 'column',
                 justifyContent: 'space-between',
@@ -380,14 +429,14 @@ export default function MainStudio() {
               }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ color: app.color, fontSize: '0.65rem', letterSpacing: '2px', fontWeight: 700 }}>{app.tag}</span>
+                <span style={{ color: app.color, fontSize: '0.6rem', letterSpacing: '2px', fontWeight: 700 }}>{app.tag}</span>
                 <div style={{
-                  width: isMobile ? '38px' : '52px', height: isMobile ? '38px' : '52px',
-                  borderRadius: '12px',
+                  width: isMobile ? '32px' : '52px', height: isMobile ? '32px' : '52px',
+                  borderRadius: '10px',
                   backgroundColor: 'white',
                   border: `1px solid ${theme.cardBorder}`,
                   display: 'flex', justifyContent: 'center', alignItems: 'center',
-                  fontSize: isMobile ? '1rem' : '1.4rem', fontWeight: 700, fontFamily: 'monospace',
+                  fontSize: isMobile ? '0.9rem' : '1.4rem', fontWeight: 700, fontFamily: 'monospace',
                   color: app.color,
                   boxShadow: '0 4px 10px rgba(12, 74, 110, 0.05)'
                 }}>
@@ -396,7 +445,7 @@ export default function MainStudio() {
               </div>
 
               <div>
-                <h3 style={{ color: theme.textPrimary, fontSize: isMobile ? '1.1rem' : '1.6rem', margin: isMobile ? '4px 0' : '0 0 10px 0', fontWeight: 700, lineHeight: '1.3' }}>
+                <h3 style={{ color: theme.textPrimary, fontSize: isMobile ? '0.95rem' : '1.6rem', margin: isMobile ? '2px 0' : '0 0 10px 0', fontWeight: 700, lineHeight: '1.3' }}>
                   {app.title.split(' // ')[0]}
                   {!isMobile && <br />}
                   {isMobile && ' // '}
@@ -416,7 +465,6 @@ export default function MainStudio() {
         </motion.div>
       )}
 
-      {/* 선택된 하위 컴포넌트 뷰 */}
       <AnimatePresence>
         {activeApp && (
           <motion.div
