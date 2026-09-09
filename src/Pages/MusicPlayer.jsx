@@ -1,14 +1,16 @@
 import React, { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 
-const AUDIO_SRC = './src/Pages/background.mp3';
+// 💡 Vite가 빌드 시 경로를 완벽하게 잡아주도록 import 방식을 사용합니다.
+import bgmFile from './background.mp3'; // MusicPlayer.jsx와 같은 폴더(src/Pages/)에 있다고 가정
 
 export default function MusicPlayer({ isPlaying, setIsPlaying, shouldMute }) {
   const audioRef = useRef(null);
   const fadeIntervalRef = useRef(null);
 
   useEffect(() => {
-    audioRef.current = new Audio(AUDIO_SRC);
+    // import한 변수를 전달
+    audioRef.current = new Audio(bgmFile);
     audioRef.current.loop = true;
     audioRef.current.volume = 0; // 초기 볼륨 0에서 시작
 
