@@ -1,91 +1,93 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const BASE_URL = import.meta.env.BASE_URL || "/";
+// BASE_URL의 중복 슬래시 방지 처리
+const rawBase = import.meta.env.BASE_URL || "/";
+const BASE_URL = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
 
 const presentations = [
   {
     id: "1-1-english",
     title: "1-1. 공통영어1 세특 발표",
     date: "2025-07-15",
-    thumbnail: `${BASE_URL}PowerPoint/1-1-english/슬라이드1.png`,
+    thumbnail: `${BASE_URL}PowerPoint/1-1-english/slide_1.png`,
     videoSrc: `${BASE_URL}PowerPoint/1-1-english/video.mp4`,
     slides: [
-      { id: 1, title: "슬라이드 1", startTime: 0, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드1.png` },
-      { id: 2, title: "슬라이드 2", startTime: 2, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드2.png` },
-      { id: 3, title: "슬라이드 3", startTime: 6, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드3.png` },
-      { id: 4, title: "슬라이드 4", startTime: 12, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드4.png` },
-      { id: 5, title: "슬라이드 5", startTime: 17, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드5.png` },
-      { id: 6, title: "슬라이드 6", startTime: 22, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드6.png` },
-      { id: 7, title: "슬라이드 7", startTime: 26, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드7.png` },
-      { id: 8, title: "슬라이드 8", startTime: 29, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드8.png` },
-      { id: 9, title: "슬라이드 9", startTime: 33, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드9.png` },
-      { id: 10, title: "슬라이드 10", startTime: 36, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드10.png` },
-      { id: 11, title: "슬라이드 11", startTime: 41, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드11.png` },
-      { id: 12, title: "슬라이드 12", startTime: 50, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드12.png` },
-      { id: 13, title: "슬라이드 13", startTime: 59, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드13.png` },
-      { id: 14, title: "슬라이드 14", startTime: 68, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드14.png` },
-      { id: 15, title: "슬라이드 15", startTime: 72, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드15.png` },
-      { id: 16, title: "슬라이드 16", startTime: 77, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드16.png` },
-      { id: 17, title: "슬라이드 17", startTime: 80, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드17.png` },
-      { id: 18, title: "슬라이드 18", startTime: 83, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드18.png` },
-      { id: 19, title: "슬라이드 19", startTime: 87, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드19.png` },
-      { id: 20, title: "슬라이드 20", startTime: 90, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드20.png` },
-      { id: 21, title: "슬라이드 21", startTime: 100, thumb: `${BASE_URL}PowerPoint/1-1-english/슬라이드21.png` }
+      { id: 1, title: "슬라이드 1", startTime: 0, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_1.png` },
+      { id: 2, title: "슬라이드 2", startTime: 2, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_2.png` },
+      { id: 3, title: "슬라이드 3", startTime: 6, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_3.png` },
+      { id: 4, title: "슬라이드 4", startTime: 12, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_4.png` },
+      { id: 5, title: "슬라이드 5", startTime: 17, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_5.png` },
+      { id: 6, title: "슬라이드 6", startTime: 22, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_6.png` },
+      { id: 7, title: "슬라이드 7", startTime: 26, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_7.png` },
+      { id: 8, title: "슬라이드 8", startTime: 29, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_8.png` },
+      { id: 9, title: "슬라이드 9", startTime: 33, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_9.png` },
+      { id: 10, title: "슬라이드 10", startTime: 36, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_10.png` },
+      { id: 11, title: "슬라이드 11", startTime: 41, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_11.png` },
+      { id: 12, title: "슬라이드 12", startTime: 50, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_12.png` },
+      { id: 13, title: "슬라이드 13", startTime: 59, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_13.png` },
+      { id: 14, title: "슬라이드 14", startTime: 68, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_14.png` },
+      { id: 15, title: "슬라이드 15", startTime: 72, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_15.png` },
+      { id: 16, title: "슬라이드 16", startTime: 77, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_16.png` },
+      { id: 17, title: "슬라이드 17", startTime: 80, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_17.png` },
+      { id: 18, title: "슬라이드 18", startTime: 83, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_18.png` },
+      { id: 19, title: "슬라이드 19", startTime: 87, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_19.png` },
+      { id: 20, title: "슬라이드 20", startTime: 90, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_20.png` },
+      { id: 21, title: "슬라이드 21", startTime: 100, thumb: `${BASE_URL}PowerPoint/1-1-english/slide_21.png` }
     ]
   },
   {
     id: "1-1-korean",
     title: "1-1. 공통국어1 세특 발표",
     date: "2025-06-08",
-    thumbnail: `${BASE_URL}PowerPoint/1-1-korean/슬라이드1.png`,
+    thumbnail: `${BASE_URL}PowerPoint/1-1-korean/slide_1.png`,
     videoSrc: `${BASE_URL}PowerPoint/1-1-korean/video.mp4`,
     slides: [
-      { id: 1, title: "슬라이드 1", startTime: 0, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드1.png` },
-      { id: 2, title: "슬라이드 2", startTime: 2, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드2.png` },
-      { id: 3, title: "슬라이드 3", startTime: 4, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드3.png` },
-      { id: 4, title: "슬라이드 4", startTime: 6, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드4.png` },
-      { id: 5, title: "슬라이드 5", startTime: 7, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드5.png` },
-      { id: 6, title: "슬라이드 6", startTime: 11, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드6.png` },
-      { id: 7, title: "슬라이드 7", startTime: 12, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드7.png` },
-      { id: 8, title: "슬라이드 8", startTime: 15, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드8.png` },
-      { id: 9, title: "슬라이드 9", startTime: 19, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드9.png` },
-      { id: 10, title: "슬라이드 10", startTime: 21, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드10.png` },
-      { id: 11, title: "슬라이드 11", startTime: 25, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드11.png` },
-      { id: 12, title: "슬라이드 12", startTime: 29, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드12.png` },
-      { id: 13, title: "슬라이드 13", startTime: 32, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드13.png` },
-      { id: 14, title: "슬라이드 14", startTime: 35, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드14.png` },
-      { id: 15, title: "슬라이드 15", startTime: 38, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드15.png` },
-      { id: 16, title: "슬라이드 16", startTime: 40, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드16.png` },
-      { id: 17, title: "슬라이드 17", startTime: 43, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드17.png` },
-      { id: 18, title: "슬라이드 18", startTime: 45, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드18.png` },
-      { id: 19, title: "슬라이드 19", startTime: 55, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드19.png` },
-      { id: 20, title: "슬라이드 20", startTime: 59, thumb: `${BASE_URL}PowerPoint/1-1-korean/슬라이드20.png` }
+      { id: 1, title: "슬라이드 1", startTime: 0, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_1.png` },
+      { id: 2, title: "슬라이드 2", startTime: 2, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_2.png` },
+      { id: 3, title: "슬라이드 3", startTime: 4, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_3.png` },
+      { id: 4, title: "슬라이드 4", startTime: 6, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_4.png` },
+      { id: 5, title: "슬라이드 5", startTime: 7, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_5.png` },
+      { id: 6, title: "슬라이드 6", startTime: 11, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_6.png` },
+      { id: 7, title: "슬라이드 7", startTime: 12, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_7.png` },
+      { id: 8, title: "슬라이드 8", startTime: 15, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_8.png` },
+      { id: 9, title: "슬라이드 9", startTime: 19, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_9.png` },
+      { id: 10, title: "슬라이드 10", startTime: 21, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_10.png` },
+      { id: 11, title: "슬라이드 11", startTime: 25, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_11.png` },
+      { id: 12, title: "슬라이드 12", startTime: 29, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_12.png` },
+      { id: 13, title: "슬라이드 13", startTime: 32, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_13.png` },
+      { id: 14, title: "슬라이드 14", startTime: 35, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_14.png` },
+      { id: 15, title: "슬라이드 15", startTime: 38, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_15.png` },
+      { id: 16, title: "슬라이드 16", startTime: 40, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_16.png` },
+      { id: 17, title: "슬라이드 17", startTime: 43, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_17.png` },
+      { id: 18, title: "슬라이드 18", startTime: 45, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_18.png` },
+      { id: 19, title: "슬라이드 19", startTime: 55, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_19.png` },
+      { id: 20, title: "슬라이드 20", startTime: 59, thumb: `${BASE_URL}PowerPoint/1-1-korean/slide_20.png` }
     ]
   },
   {
     id: "1-1-social",
     title: "1-1. 통합사회1 세특 발표",
     date: "2025-05-31",
-    thumbnail: `${BASE_URL}PowerPoint/1-1-social/슬라이드1.png`,
+    thumbnail: `${BASE_URL}PowerPoint/1-1-social/slide_1.png`,
     videoSrc: `${BASE_URL}PowerPoint/1-1-social/video.mp4`,
     slides: [
-      { id: 1, title: "슬라이드 1", startTime: 0, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드1.png` },
-      { id: 2, title: "슬라이드 2", startTime: 2, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드2.png` },
-      { id: 3, title: "슬라이드 3", startTime: 9, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드3.png` },
-      { id: 4, title: "슬라이드 4", startTime: 11, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드4.png` },
-      { id: 5, title: "슬라이드 5", startTime: 14, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드5.png` },
-      { id: 6, title: "슬라이드 6", startTime: 17, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드6.png` },
-      { id: 7, title: "슬라이드 7", startTime: 19, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드7.png` },
-      { id: 8, title: "슬라이드 8", startTime: 21, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드8.png` },
-      { id: 9, title: "슬라이드 9", startTime: 44, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드9.png` },
-      { id: 10, title: "슬라이드 10", startTime: 47, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드10.png` },
-      { id: 11, title: "슬라이드 11", startTime: 50, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드11.png` },
-      { id: 12, title: "슬라이드 12", startTime: 52, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드12.png` },
-      { id: 13, title: "슬라이드 13", startTime: 55, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드13.png` },
-      { id: 14, title: "슬라이드 14", startTime: 57, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드14.png` },
-      { id: 15, title: "슬라이드 15", startTime: 60, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드15.png` },
-      { id: 16, title: "슬라이드 16", startTime: 62, thumb: `${BASE_URL}PowerPoint/1-1-social/슬라이드16.png` }
+      { id: 1, title: "슬라이드 1", startTime: 0, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_1.png` },
+      { id: 2, title: "슬라이드 2", startTime: 2, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_2.png` },
+      { id: 3, title: "슬라이드 3", startTime: 9, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_3.png` },
+      { id: 4, title: "슬라이드 4", startTime: 11, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_4.png` },
+      { id: 5, title: "슬라이드 5", startTime: 14, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_5.png` },
+      { id: 6, title: "슬라이드 6", startTime: 17, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_6.png` },
+      { id: 7, title: "슬라이드 7", startTime: 19, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_7.png` },
+      { id: 8, title: "슬라이드 8", startTime: 21, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_8.png` },
+      { id: 9, title: "슬라이드 9", startTime: 44, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_9.png` },
+      { id: 10, title: "슬라이드 10", startTime: 47, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_10.png` },
+      { id: 11, title: "슬라이드 11", startTime: 50, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_11.png` },
+      { id: 12, title: "슬라이드 12", startTime: 52, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_12.png` },
+      { id: 13, title: "슬라이드 13", startTime: 55, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_13.png` },
+      { id: 14, title: "슬라이드 14", startTime: 57, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_14.png` },
+      { id: 15, title: "슬라이드 15", startTime: 60, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_15.png` },
+      { id: 16, title: "슬라이드 16", startTime: 62, thumb: `${BASE_URL}PowerPoint/1-1-social/slide_16.png` }
     ]
   }
 ];
@@ -488,7 +490,7 @@ export default function PowerPointSection({ onBack }) {
                 className="ppt-editor-layout"
               >
                 <div className="ppt-sidebar" ref={sidebarRef}>
-                  {selectedPpt.slides.for_each ? null : selectedPpt.slides.map((slide, idx) => (
+                  {selectedPpt.slides.map((slide, idx) => (
                     <div 
                       key={slide.id} 
                       ref={(el) => (slideRefs.current[idx] = el)}
