@@ -152,13 +152,11 @@ export default function MainStudio() {
     <div onMouseMove={handleMouseMove} style={styles.global}>
       <BlueArchiveCursor isMobile={isMobile} />
 
-      {/* 💡 모바일 홈 인디케이터에 가리지 않도록 반응형으로 위치 제어되는 음악 플레이어 래퍼 */}
+      {/* 우측 하단 음악 플레이어 */}
       <div style={{
         position: 'fixed',
-        bottom: isMobile ? 'calc(16px + env(safe-area-inset-bottom))' : '24px',
-        right: isMobile ? 'auto' : '28px',
-        left: isMobile ? '50%' : 'auto',
-        transform: isMobile ? 'translateX(-50%)' : 'none',
+        bottom: isMobile ? '52px' : '24px',
+        right: isMobile ? '16px' : '28px',
         zIndex: 100,
         pointerEvents: 'none',
       }}>
@@ -227,6 +225,7 @@ export default function MainStudio() {
         )}
       </AnimatePresence>
 
+      {/* 💡 상단 헤더 영역 (모바일/PC 구분하여 터치 충돌 원천 방지) */}
       {!activeApp && (
         <motion.div
           initial={{ opacity: 0, y: -20, filter: 'blur(8px)' }}
@@ -234,25 +233,26 @@ export default function MainStudio() {
           transition={{ duration: 0.8, delay: 0.4 }}
           style={{
             position: 'absolute',
-            top: isMobile ? '20px' : '24px',
-            left: isMobile ? '20px' : '28px',
-            right: isMobile ? '20px' : 'auto',
-            zIndex: 10,
+            top: '16px',
+            left: '20px',
+            right: '20px',
+            zIndex: 40,
             display: 'flex',
             flexDirection: isMobile ? 'column' : 'row',
             justifyContent: 'space-between',
             alignItems: isMobile ? 'flex-start' : 'center',
-            gap: isMobile ? '12px' : '0',
-            pointerEvents: 'none',
+            gap: isMobile ? '10px' : '0',
+            pointerEvents: 'auto',
           }}
         >
           <div>
-            <h1 style={{ color: wallpaperOn ? '#ffffff' : theme.textPrimary, fontSize: isMobile ? '1rem' : '1.4rem', margin: 0, fontWeight: 700, letterSpacing: '3px', textShadow: wallpaperOn ? '0 2px 10px rgba(0,0,0,0.5)' : 'none' }}>PROJECT PORTPOLIO</h1>
-            <p style={{ color: wallpaperOn ? '#bae6fd' : theme.textSecondary, marginTop: '2px', fontSize: isMobile ? '0.65rem' : '0.8rem', letterSpacing: '2px', fontWeight: 500 }}>hoo091221's Archive</p>
+            <h1 style={{ color: wallpaperOn ? '#ffffff' : theme.textPrimary, fontSize: isMobile ? '0.95rem' : '1.4rem', margin: 0, fontWeight: 700, letterSpacing: '2px', textShadow: wallpaperOn ? '0 2px 10px rgba(0,0,0,0.5)' : 'none' }}>PROJECT PORTPOLIO</h1>
+            <p style={{ color: wallpaperOn ? '#bae6fd' : theme.textSecondary, marginTop: '2px', fontSize: isMobile ? '0.6rem' : '0.8rem', letterSpacing: '1.5px', fontWeight: 500 }}>hoo091221's Archive</p>
           </div>
 
+          {/* 모바일 소셜 및 테마 버튼 그룹 */}
           {isMobile && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', pointerEvents: 'auto', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', width: '100%' }}>
               {socials.map((soc, idx) => (
                 <motion.a
                   key={idx}
@@ -265,6 +265,8 @@ export default function MainStudio() {
                     textDecoration: 'none',
                     fontWeight: 600,
                     textShadow: wallpaperOn ? '0 2px 6px rgba(0,0,0,0.5)' : 'none',
+                    cursor: 'pointer',
+                    padding: '2px 0',
                   }}
                 >
                   {soc.name}
@@ -277,8 +279,8 @@ export default function MainStudio() {
                   border: `1px solid ${wallpaperOn ? 'rgba(255, 255, 255, 0.4)' : theme.cardBorder}`,
                   color: wallpaperOn ? '#ffffff' : theme.textPrimary,
                   padding: '4px 10px',
-                  borderRadius: '16px',
-                  fontSize: '0.7rem',
+                  borderRadius: '14px',
+                  fontSize: '0.65rem',
                   fontWeight: 700,
                   cursor: 'pointer',
                   backdropFilter: 'blur(10px)',
@@ -291,6 +293,7 @@ export default function MainStudio() {
         </motion.div>
       )}
 
+      {/* PC 전용 우측 상단 버튼 그룹 */}
       {!activeApp && !isMobile && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
@@ -298,12 +301,13 @@ export default function MainStudio() {
           transition={{ duration: 0.8, delay: 0.5 }}
           style={{
             position: 'absolute',
-            top: '8vh',
-            right: '5vw',
+            top: '24px',
+            right: '28px',
             display: 'flex',
             alignItems: 'center',
             gap: '1.2rem',
-            zIndex: 10,
+            zIndex: 40,
+            pointerEvents: 'auto',
           }}
         >
           {socials.map((soc, idx) => (
@@ -376,21 +380,22 @@ export default function MainStudio() {
         )}
       </AnimatePresence>
 
+      {/* 💡 중앙 카드 영역 (상단 헤더와 겹치지 않도록 위쪽 여백 조절 및 독립 스크롤 적용) */}
       {!activeApp && (
         <motion.div
           style={{
             display: 'flex',
             flexDirection: isMobile ? 'column' : 'row',
-            gap: isMobile ? '0.8rem' : '2.5rem',
+            gap: isMobile ? '12px' : '2.5rem',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 10,
             rotateX: isMobile ? 0 : motionRotateX,
             rotateY: isMobile ? 0 : motionRotateY,
             transformStyle: 'preserve-3d',
-            maxHeight: isMobile ? '70vh' : 'none',
+            maxHeight: isMobile ? '72vh' : 'none',
             overflowY: isMobile ? 'auto' : 'visible',
-            padding: isMobile ? '100px 20px 80px 20px' : '0',
+            padding: isMobile ? '90px 16px 80px 16px' : '0', // 헤더와 겹침 방지 간격 최적화
             width: '100%',
           }}
           initial={{ opacity: 0, scale: 0.92, y: 30, filter: 'blur(10px)' }}
