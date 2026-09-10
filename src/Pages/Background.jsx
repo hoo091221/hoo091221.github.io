@@ -77,7 +77,7 @@ export default function MainStudio() {
       tag: '02. CREATIVE CODING',
       symbol: <i className="fa-regular fa-file-powerpoint"></i>,
       color: '#0369a1',
-      isLocked: false,
+      isLocked: true,
       component: <PowerPointSection onBack={() => setActiveApp(null)} />
     },
     fl: {
